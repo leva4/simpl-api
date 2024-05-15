@@ -5,12 +5,8 @@ info:
   description: API for managing user accounts and their details.
 
 servers:
-    - url: https://5p7ne0s78c.execute-api.eu-central-1.amazonaws.com
+    - url: http://localhost:5000
       description: Development server
-    - url: https://5j7i8hrs93.execute-api.eu-central-1.amazonaws.com
-      description: Staging server
-    - url: https://s22von0alh.execute-api.eu-central-1.amazonaws.com
-      description: Production server
 
 security:
   - BearerAuth: []
