@@ -291,6 +291,13 @@ components:
           format: date
         name:
           type: string
+    OrganisationSettingsDTO:
+      type: object
+      properties:
+        departments:
+          type: array
+          items:
+            $ref: "#/components/schemas/DepartmentDTO"
     GeneralErrorDTO:
         type: object
         description: A general error data transfer object that provides details about an API error.
@@ -918,6 +925,61 @@ paths:
                     $ref: '#/components/schemas/EmployeeDTO'
                   employeeGoModuleDetails:
                     $ref: "#/components/schemas/EmployeeGOModuleDetailsDTO"
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+
+  /api/organisation/settings:
+    get:
+      tags:
+        - Organisation
+      summary: Retrieve organisation settings
+      description: Fetches organisation settings.
+      responses:
+        200:
+          description: Organisation settings retrieved successfully.
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  departments:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/DepartmentDTO"
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+
+    put:
+      tags:
+        - Organisation
+      summary: Update organisation settings
+      description: Updates organisation settings with the provided details.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                departments:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/DepartmentDTO"
+      responses:
+        200:
+          description: Organisation settings updated successfully.
         400:
           $ref: '#/components/responses/400'
         401:
