@@ -5,8 +5,8 @@ info:
   description: API for managing user accounts and their details.
 
 servers:
-    - url: http://localhost:5000
-      description: Development server
+  - url: http://localhost:5000
+    description: Development server
 
 security:
   - BearerAuth: []
@@ -42,7 +42,7 @@ components:
         id:
           type: string
         employee:
-          $ref: '#/components/schemas/EmployeeDTO'
+          $ref: "#/components/schemas/EmployeeDTO"
         createdAt:
           type: string
           format: date-time
@@ -50,7 +50,7 @@ components:
           type: string
           format: date-time
         createdBy:
-          $ref: '#/components/schemas/EmployeeDTO'
+          $ref: "#/components/schemas/EmployeeDTO"
         allowedActions:
           type: array
           items:
@@ -68,11 +68,11 @@ components:
         categories:
           type: array
           items:
-            $ref: '#/components/schemas/RequestCategoryDTO'
+            $ref: "#/components/schemas/RequestCategoryDTO"
         subcategories:
           type: array
           items:
-            $ref: '#/components/schemas/RequestCategoryDTO'
+            $ref: "#/components/schemas/RequestCategoryDTO"
     RequestStatusDetailsDTO:
       type: object
       properties:
@@ -84,7 +84,7 @@ components:
           format: date-time
           description: "Timestamp of when the request status was last changed."
         changedBy:
-          $ref: '#/components/schemas/EmployeeDTO'
+          $ref: "#/components/schemas/EmployeeDTO"
         note:
           type: string
           description: "Note associated with the status change."
@@ -101,58 +101,58 @@ components:
           type: string
           description: A description of the team within the department.
       required:
-          - id
-          - departmentName
+        - id
+        - departmentName
     EmployeeDTO:
-        type: object
-        description: Data transfer object representing an employee.
-        properties:
-          id:
-            type: string
-            format: uuid
-            description: The unique identifier of the employee.
-          firstName:
-            type: string
-            description: The first name of the employee.
-          lastName:
-            type: string
-            description: The last name of the employee.
-          jobTitle:
-            type: string
-            description: The job title of the employee within the organization.
-          department:
-            $ref: '#/components/schemas/DepartmentDTO'
-          email:
-            type: string
-            description: The email of the employee.
-        required:
-            - id
-            - firstName
-            - lastName
+      type: object
+      description: Data transfer object representing an employee.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier of the employee.
+        firstName:
+          type: string
+          description: The first name of the employee.
+        lastName:
+          type: string
+          description: The last name of the employee.
+        jobTitle:
+          type: string
+          description: The job title of the employee within the organization.
+        department:
+          $ref: "#/components/schemas/DepartmentDTO"
+        email:
+          type: string
+          description: The email of the employee.
+      required:
+        - id
+        - firstName
+        - lastName
     EmployeeGOModuleDetailsDTO:
-        type: object
-        description: Data transfer object representing an employee's go module details.
-        properties:
-          requestCategories: 
-              type: array
-              items: 
-                $ref: '#/components/schemas/RequestCategoryDTO'  
-          supervisors:
-            type: array
-            items:
-              $ref: '#/components/schemas/EmployeeDTO'
-          supervisees:
-            type: array
-            items:
-              $ref: '#/components/schemas/EmployeeDTO'
-          representatives:
-            type: array
-            items:
-              $ref: '#/components/schemas/EmployeeDTO'
-          representees:
-            type: array
-            items:
-              $ref: '#/components/schemas/EmployeeDTO'
+      type: object
+      description: Data transfer object representing an employee's go module details.
+      properties:
+        requestCategories:
+          type: array
+          items:
+            $ref: "#/components/schemas/RequestCategoryDTO"
+        supervisors:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmployeeDTO"
+        supervisees:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmployeeDTO"
+        representatives:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmployeeDTO"
+        representees:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmployeeDTO"
     ProfileDTO:
       type: object
       properties:
@@ -164,7 +164,7 @@ components:
           format: email
           description: The email address associated with the user's profile.
         employee:
-          $ref: '#/components/schemas/EmployeeDTO'
+          $ref: "#/components/schemas/EmployeeDTO"
         language:
           type: string
           description: The language preference code for the user's profile.
@@ -172,7 +172,7 @@ components:
           description: A list of notification types associated with the user's profile.
           type: array
           items:
-            $ref: '#/components/schemas/NotificationTypeDTO'
+            $ref: "#/components/schemas/NotificationTypeDTO"
     NotificationTypeDTO:
       type: object
       properties:
@@ -214,7 +214,7 @@ components:
             details:
               description: Current user employee go module details
               $ref: "#/components/schemas/EmployeeGOModuleDetailsDTO"
-            organisationRequestCategories: 
+            organisationRequestCategories:
               type: array
               items:
                 $ref: "#/components/schemas/OrganisationRequestCategoryDTO"
@@ -274,9 +274,9 @@ components:
           type: string
         subcategories:
           type: array
-          items: 
+          items:
             type: object
-            properties: 
+            properties:
               id:
                 type: string
               name:
@@ -299,22 +299,28 @@ components:
           items:
             $ref: "#/components/schemas/DepartmentDTO"
     GeneralErrorDTO:
-        type: object
-        description: A general error data transfer object that provides details about an API error.
-        properties:
-          errorMessage:
-            type: string
-            description: A human-readable message providing more details about the error.
-          errorCode:
-            type: integer
-            description: A numeric code representing the type of error.
-          displayErrorMessage:
-            type: string
-            description: A message suitable for displaying to end-users, potentially less technical.
-        required:
-            - errorMessage
-            - errorCode
-            - displayErrorMessage
+      type: object
+      description: A general error data transfer object that provides details about an API error.
+      properties:
+        errorMessage:
+          type: string
+          description: A human-readable message providing more details about the error.
+        errorCode:
+          type: integer
+          description: A numeric code representing the type of error.
+        displayErrorMessage:
+          type: string
+          description: A message suitable for displaying to end-users, potentially less technical.
+      required:
+        - errorMessage
+        - errorCode
+        - displayErrorMessage
+    EmployeeDetailsDTO:
+      type: object
+      properties:
+        data:
+          type: object
+          description: A JSON object containing the details of the employee.
 
   parameters:
     page:
@@ -350,7 +356,7 @@ components:
       schema:
         type: string
 
-  responses: 
+  responses:
     "400":
       description: The server could not understand the request.
       content:
@@ -391,49 +397,49 @@ paths:
               schema:
                 $ref: "#/components/schemas/WorkspaceSessionDTO"
         400:
-          $ref: '#/components/responses/400'
+          $ref: "#/components/responses/400"
         401:
-          $ref: '#/components/responses/401'
+          $ref: "#/components/responses/401"
         403:
-          $ref: '#/components/responses/403'
+          $ref: "#/components/responses/403"
         404:
-          $ref: '#/components/responses/404'
+          $ref: "#/components/responses/404"
   /api/employees:
     get:
-        tags:
-            - Employees
-        summary: List all employees
-        description: Retrieves a list of all employees accounts.
-        parameters:
-        - $ref: '#/components/parameters/page'
-        - $ref: '#/components/parameters/pageSize'
-        - $ref: '#/components/parameters/search'
+      tags:
+        - Employees
+      summary: List all employees
+      description: Retrieves a list of all employees accounts.
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
         - in: query
           name: hasProfile
           schema:
             type: boolean
-        responses: 
-          200: 
-            description: A list of employees
-            content: 
-              application/json: 
-                schema: 
-                  type: object
-                  properties:
-                    pagination:
-                      $ref: '#/components/schemas/Pagination'
+      responses:
+        200:
+          description: A list of employees
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+                  items:
+                    type: array
                     items:
-                      type: array
-                      items:
-                        $ref: "#/components/schemas/EmployeeDTO"
-          400:
-            $ref: '#/components/responses/400'
-          401:
-            $ref: '#/components/responses/401'
-          403:
-            $ref: '#/components/responses/403'
-          404:
-            $ref: '#/components/responses/404'
+                      $ref: "#/components/schemas/EmployeeDTO"
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        403:
+          $ref: "#/components/responses/403"
+        404:
+          $ref: "#/components/responses/404"
     post:
       tags:
         - Employees
@@ -474,13 +480,13 @@ paths:
                   id:
                     type: string
         400:
-          $ref: '#/components/responses/400'
+          $ref: "#/components/responses/400"
         401:
-          $ref: '#/components/responses/400'
+          $ref: "#/components/responses/400"
         403:
-          $ref: '#/components/responses/403'
+          $ref: "#/components/responses/403"
         404:
-          $ref: '#/components/responses/404'
+          $ref: "#/components/responses/404"
         409:
           description: User already exists.
 
@@ -491,27 +497,27 @@ paths:
       summary: Retrieve a user by Employee ID
       description: Fetches details of a user by their Employee ID.
       parameters:
-        - $ref: '#/components/parameters/pathId'
+        - $ref: "#/components/parameters/pathId"
       responses:
         200:
           description: Employee details retrieved successfully.
           content:
             application/json:
-              schema: 
+              schema:
                 type: object
                 properties:
                   employeeGeneral:
-                    $ref: '#/components/schemas/EmployeeDTO'
+                    $ref: "#/components/schemas/EmployeeDTO"
                   employeeGoModuleDetails:
                     $ref: "#/components/schemas/EmployeeGOModuleDetailsDTO"
         400:
-          $ref: '#/components/responses/400'
+          $ref: "#/components/responses/400"
         401:
-          $ref: '#/components/responses/401'
+          $ref: "#/components/responses/401"
         403:
-          $ref: '#/components/responses/403'
+          $ref: "#/components/responses/403"
         404:
-          $ref: '#/components/responses/404'
+          $ref: "#/components/responses/404"
 
   /api/employees/settings/{id}:
     get:
@@ -520,27 +526,27 @@ paths:
       summary: Retrieve employee's settings by Employee ID
       description: Fetches details of a user by their Employee ID.
       parameters:
-        - $ref: '#/components/parameters/pathId'
+        - $ref: "#/components/parameters/pathId"
       responses:
         200:
           description: Employee details retrieved successfully.
           content:
             application/json:
-              schema: 
+              schema:
                 type: object
                 properties:
                   employeeGeneral:
-                    $ref: '#/components/schemas/EmployeeDTO'
+                    $ref: "#/components/schemas/EmployeeDTO"
                   employeeGoModuleDetails:
                     $ref: "#/components/schemas/EmployeeGOModuleDetailsDTO"
         400:
-          $ref: '#/components/responses/400'
+          $ref: "#/components/responses/400"
         401:
-          $ref: '#/components/responses/401'
+          $ref: "#/components/responses/401"
         403:
-          $ref: '#/components/responses/403'
+          $ref: "#/components/responses/403"
         404:
-          $ref: '#/components/responses/404'
+          $ref: "#/components/responses/404"
 
     put:
       tags:
@@ -548,7 +554,7 @@ paths:
       summary: Update an employees settings
       description: Updates an existing user with the provided details.
       parameters:
-        - $ref: '#/components/parameters/pathId'
+        - $ref: "#/components/parameters/pathId"
       requestBody:
         required: true
         content:
@@ -585,18 +591,18 @@ paths:
                   type: array
                   description: "List of request categories to update (optional)."
                   items:
-                    $ref: '#/components/schemas/RequestCategoryDTO'
+                    $ref: "#/components/schemas/RequestCategoryDTO"
       responses:
         200:
           description: Employee updated successfully.
         400:
-          $ref: '#/components/responses/400'
+          $ref: "#/components/responses/400"
         401:
-          $ref: '#/components/responses/401'
+          $ref: "#/components/responses/401"
         403:
-          $ref: '#/components/responses/403'
+          $ref: "#/components/responses/403"
         404:
-          $ref: '#/components/responses/404'
+          $ref: "#/components/responses/404"
 
     delete:
       tags:
@@ -604,18 +610,66 @@ paths:
       summary: Delete an employee
       description: Deletes an existing user with the provided employee ID.
       parameters:
-        - $ref: '#/components/parameters/pathId'
+        - $ref: "#/components/parameters/pathId"
       responses:
         200:
           description: Employee deleted successfully.
         400:
-          $ref: '#/components/responses/400'
+          $ref: "#/components/responses/400"
         401:
-          $ref: '#/components/responses/401'
+          $ref: "#/components/responses/401"
         403:
-          $ref: '#/components/responses/403'
+          $ref: "#/components/responses/403"
         404:
-          $ref: '#/components/responses/404'
+          $ref: "#/components/responses/404"
+
+  /api/employees/details/{id}:
+    get:
+      tags:
+        - Employees
+      summary: Retrieve employee details by Employee ID
+      description: Fetches detailed information of an employee by their Employee ID.
+      parameters:
+        - $ref: "#/components/parameters/pathId"
+      responses:
+        200:
+          description: Employee details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmployeeDetailsDTO"
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        403:
+          $ref: "#/components/responses/403"
+        404:
+          $ref: "#/components/responses/404"
+    put:
+      tags:
+        - Employees
+      summary: Update employee details
+      description: Updates an existing employee with the provided details.
+      parameters:
+        - $ref: "#/components/parameters/pathId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmployeeDetailsDTO"
+      responses:
+        200:
+          description: Employee details updated successfully.
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        403:
+          $ref: "#/components/responses/403"
+        404:
+          $ref: "#/components/responses/404"
 
   /api/profile:
     get:
@@ -629,50 +683,50 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProfileDTO'
+                $ref: "#/components/schemas/ProfileDTO"
         401:
-          $ref: '#/components/responses/401'
+          $ref: "#/components/responses/401"
         403:
-          $ref: '#/components/responses/403'
+          $ref: "#/components/responses/403"
         404:
-          $ref: '#/components/responses/404'
+          $ref: "#/components/responses/404"
     put:
-        tags:
-          - Profiles
-        summary: Update current profile
-        description: Updates an existing user with the provided details.
-        operationId: updateProfileNotifications
-        requestBody:
-          required: true
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  firstName:
+      tags:
+        - Profiles
+      summary: Update current profile
+      description: Updates an existing user with the provided details.
+      operationId: updateProfileNotifications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                jobTitle:
+                  type: string
+                languageCode:
+                  type: string
+                notificationsIds:
+                  type: array
+                  items:
                     type: string
-                  lastName:
-                    type: string
-                  jobTitle:
-                    type: string
-                  languageCode:
-                    type: string
-                  notificationsIds:
-                    type: array
-                    items:
-                      type: string
-                    description: List of representative Firebase UIDs to update (optional).
-        responses:
-          200:
-            description: Profile updated successfully.
-          400:
-            $ref: '#/components/responses/400'
-          401:
-            $ref: '#/components/responses/401'
-          403:
-            $ref: '#/components/responses/403'
-          404:
-            $ref: '#/components/responses/404'
+                  description: List of representative Firebase UIDs to update (optional).
+      responses:
+        200:
+          description: Profile updated successfully.
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        403:
+          $ref: "#/components/responses/403"
+        404:
+          $ref: "#/components/responses/404"
   /api/requests:
     get:
       summary: List all requests
@@ -680,8 +734,8 @@ paths:
       tags:
         - Requests
       parameters:
-        - $ref: '#/components/parameters/page'
-        - $ref: '#/components/parameters/pageSize'
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
         - in: query
           name: employeeId
           schema:
@@ -730,28 +784,28 @@ paths:
           name: includeCurrentEmployee
           schema:
             type: boolean
-      responses: 
-        200: 
+      responses:
+        200:
           description: A list of requests
-          content: 
-            application/json: 
-              schema: 
+          content:
+            application/json:
+              schema:
                 type: object
                 properties:
                   pagination:
-                    $ref: '#/components/schemas/Pagination'
+                    $ref: "#/components/schemas/Pagination"
                   items:
                     type: array
                     items:
                       $ref: "#/components/schemas/RequestDTO"
         400:
-          $ref: '#/components/responses/400'
+          $ref: "#/components/responses/400"
         401:
-          $ref: '#/components/responses/401'
+          $ref: "#/components/responses/401"
         403:
-          $ref: '#/components/responses/403'
+          $ref: "#/components/responses/403"
         404:
-          $ref: '#/components/responses/404'
+          $ref: "#/components/responses/404"
     post:
       tags:
         - Requests
@@ -802,13 +856,13 @@ paths:
                     type: string
                     description: "The ID of the newly created leave request."
         400:
-          $ref: '#/components/responses/400'
+          $ref: "#/components/responses/400"
         401:
-          $ref: '#/components/responses/401'
+          $ref: "#/components/responses/401"
         403:
-          $ref: '#/components/responses/403'
+          $ref: "#/components/responses/403"
         404:
-          $ref: '#/components/responses/404'
+          $ref: "#/components/responses/404"
 
   /api/requests/{id}:
     get:
@@ -817,7 +871,7 @@ paths:
       summary: Get a specific request
       description: Retrieves a specific leave request by its ID.
       parameters:
-        - $ref: '#/components/parameters/pathId'
+        - $ref: "#/components/parameters/pathId"
       responses:
         200:
           description: Detailed request information.
@@ -830,22 +884,22 @@ paths:
                   requestHistory:
                     type: array
                     items:
-                      $ref: '#/components/schemas/RequestStatusDetailsDTO'
+                      $ref: "#/components/schemas/RequestStatusDetailsDTO"
         400:
-          $ref: '#/components/responses/400'
+          $ref: "#/components/responses/400"
         401:
-          $ref: '#/components/responses/401'
+          $ref: "#/components/responses/401"
         403:
-          $ref: '#/components/responses/403'
+          $ref: "#/components/responses/403"
         404:
-          $ref: '#/components/responses/404'
+          $ref: "#/components/responses/404"
     put:
       tags:
         - Requests
       summary: Update a specific request
       description: Allows users to update a specific leave request.
       parameters:
-        - $ref: '#/components/parameters/pathId'
+        - $ref: "#/components/parameters/pathId"
       requestBody:
         required: true
         content:
@@ -864,46 +918,46 @@ paths:
         200:
           description: Status updated successfully.
         400:
-          $ref: '#/components/responses/400'
+          $ref: "#/components/responses/400"
         401:
-          $ref: '#/components/responses/401'
+          $ref: "#/components/responses/401"
         403:
-          $ref: '#/components/responses/403'
+          $ref: "#/components/responses/403"
         404:
-          $ref: '#/components/responses/404'
+          $ref: "#/components/responses/404"
 
   /api/requests/employees:
     get:
-        tags:
-            - Requests
-        summary: List all employees in GO module
-        description: Retrieves a list of all employees accounts.
-        parameters:
-        - $ref: '#/components/parameters/page'
-        - $ref: '#/components/parameters/pageSize'
-        - $ref: '#/components/parameters/search'
-        responses: 
-          200: 
-            description: A list of employees
-            content: 
-              application/json: 
-                schema: 
-                  type: object
-                  properties:
-                    pagination:
-                      $ref: '#/components/schemas/Pagination'
+      tags:
+        - Requests
+      summary: List all employees in GO module
+      description: Retrieves a list of all employees accounts.
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+      responses:
+        200:
+          description: A list of employees
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+                  items:
+                    type: array
                     items:
-                      type: array
-                      items:
-                        $ref: "#/components/schemas/EmployeeDTO"
-          400:
-            $ref: '#/components/responses/400'
-          401:
-            $ref: '#/components/responses/401'
-          403:
-            $ref: '#/components/responses/403'
-          404:
-            $ref: '#/components/responses/404'
+                      $ref: "#/components/schemas/EmployeeDTO"
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        403:
+          $ref: "#/components/responses/403"
+        404:
+          $ref: "#/components/responses/404"
 
   /api/requests/employees/{id}:
     get:
@@ -912,27 +966,27 @@ paths:
       summary: Retrieve a employees GO module data
       description: Fetches employees GO module data by their Employee ID.
       parameters:
-        - $ref: '#/components/parameters/pathId'
+        - $ref: "#/components/parameters/pathId"
       responses:
         200:
           description: Employee details retrieved successfully.
           content:
             application/json:
-              schema: 
+              schema:
                 type: object
                 properties:
                   employeeGeneral:
-                    $ref: '#/components/schemas/EmployeeDTO'
+                    $ref: "#/components/schemas/EmployeeDTO"
                   employeeGoModuleDetails:
                     $ref: "#/components/schemas/EmployeeGOModuleDetailsDTO"
         400:
-          $ref: '#/components/responses/400'
+          $ref: "#/components/responses/400"
         401:
-          $ref: '#/components/responses/401'
+          $ref: "#/components/responses/401"
         403:
-          $ref: '#/components/responses/403'
+          $ref: "#/components/responses/403"
         404:
-          $ref: '#/components/responses/404'
+          $ref: "#/components/responses/404"
 
   /api/organisation/settings:
     get:
@@ -945,7 +999,7 @@ paths:
           description: Organisation settings retrieved successfully.
           content:
             application/json:
-              schema: 
+              schema:
                 type: object
                 properties:
                   departments:
@@ -953,13 +1007,13 @@ paths:
                     items:
                       $ref: "#/components/schemas/DepartmentDTO"
         400:
-          $ref: '#/components/responses/400'
+          $ref: "#/components/responses/400"
         401:
-          $ref: '#/components/responses/401'
+          $ref: "#/components/responses/401"
         403:
-          $ref: '#/components/responses/403'
+          $ref: "#/components/responses/403"
         404:
-          $ref: '#/components/responses/404'
+          $ref: "#/components/responses/404"
 
     put:
       tags:
@@ -981,13 +1035,13 @@ paths:
         200:
           description: Organisation settings updated successfully.
         400:
-          $ref: '#/components/responses/400'
+          $ref: "#/components/responses/400"
         401:
-          $ref: '#/components/responses/401'
+          $ref: "#/components/responses/401"
         403:
-          $ref: '#/components/responses/403'
+          $ref: "#/components/responses/403"
         404:
-          $ref: '#/components/responses/404'
+          $ref: "#/components/responses/404"
 
   /api/export/organisation-work-schedule:
     get:
@@ -1021,13 +1075,13 @@ paths:
                   file_content:
                     type: string
         400:
-          $ref: '#/components/responses/400'
+          $ref: "#/components/responses/400"
         401:
-          $ref: '#/components/responses/401'
+          $ref: "#/components/responses/401"
         403:
-          $ref: '#/components/responses/403'
+          $ref: "#/components/responses/403"
         404:
-          $ref: '#/components/responses/404'
+          $ref: "#/components/responses/404"
 
   /api/export/organisation-go-requests:
     get:
@@ -1067,10 +1121,10 @@ paths:
                   file_content:
                     type: string
         400:
-          $ref: '#/components/responses/400'
+          $ref: "#/components/responses/400"
         401:
-          $ref: '#/components/responses/401'
+          $ref: "#/components/responses/401"
         403:
-          $ref: '#/components/responses/403'
+          $ref: "#/components/responses/403"
         404:
-          $ref: '#/components/responses/404'
+          $ref: "#/components/responses/404"
