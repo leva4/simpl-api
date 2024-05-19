@@ -318,6 +318,9 @@ components:
     EmployeeDetailsDTO:
       type: object
       properties:
+        employeeId:
+          type: string
+          description: The unique identifier of the employee.
         data:
           type: object
           description: A JSON object containing the details of the employee.
