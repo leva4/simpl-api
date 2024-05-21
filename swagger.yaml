@@ -326,6 +326,37 @@ components:
           description: A JSON object containing the details of the employee.
       required:
         - employeeId
+    GanttDateRangeElementDTO:
+      type: object
+      description: Data transfer object representing a Gantt date range element.
+      properties:
+        startDate:
+          type: string
+          format: date-time
+          description: The start date and time of the date range.
+        endDate:
+          type: string
+          format: date-time
+          description: The end date and time of the date range.
+        typeId:
+          type: string
+          description: The type identifier of the date range element.
+        displayText:
+          type: string
+          description: The display text for the date range element.
+        hexBackgroundColor:
+          type: string
+          description: The hexadecimal color code for the background of the date range element.
+        hexTextColor:
+          type: string
+          description: The hexadecimal color code for the text of the date range element.
+      required:
+        - startDate
+        - endDate
+        - typeId
+        - displayText
+        - hexBackgroundColor
+        - hexTextColor
 
   parameters:
     page:
@@ -1125,6 +1156,36 @@ paths:
                     type: string
                   file_content:
                     type: string
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        403:
+          $ref: "#/components/responses/403"
+        404:
+          $ref: "#/components/responses/404"
+
+  /api/gantt/employees:
+    get:
+      tags:
+        - Gantt
+      summary: Retrieve Gantt date range elements for employees
+      description: Fetches a list of Gantt date range elements for all employees.
+      responses:
+        200:
+          description: Gantt date range elements retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    employee:
+                      $ref: "#/components/schemas/EmployeeDTO"
+                    dateRangeElements:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/GanttDateRangeElementDTO"
         400:
           $ref: "#/components/responses/400"
         401:
