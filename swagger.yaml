@@ -330,6 +330,9 @@ components:
       type: object
       description: Data transfer object representing a Gantt date range element.
       properties:
+        requestId:
+          type: string
+          description: The unique identifier of the request.
         startDate:
           type: string
           format: date-time
@@ -351,6 +354,7 @@ components:
           type: string
           description: The hexadecimal color code for the text of the date range element.
       required:
+        - requestId
         - startDate
         - endDate
         - typeId
