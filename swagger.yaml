@@ -361,22 +361,28 @@ components:
         - displayText
         - hexBackgroundColor
         - hexTextColor
-
-    DepartmentDTO:
+    SpecialDateDTO:
       type: object
+      description: Data transfer object representing a special date.
       properties:
         id:
           type: string
-          description: The unique identifier of the department.
-        departmentName:
+          description: Unique identifier for the special date
+        date:
           type: string
-          description: The name of the team.
-        departmentDescription:
+          format: date-time
+          description: The date of the special event
+        name:
           type: string
-          description: A description of the team within the department.
+          description: Name of the special event
+        hexBackgroundColor:
+          type: string
+          description: Hex color code for the background color
+          example: "#FFCCCC"
       required:
         - id
-        - departmentName
+        - date
+        - name
 
   parameters:
     page:
@@ -1044,6 +1050,42 @@ paths:
         404:
           $ref: "#/components/responses/404"
 
+  /api/requests/special-dates:
+    get:
+      tags:
+        - Requests
+      summary: Retrieve special dates for specified years
+      description: Fetches special dates for the given array of years.
+      parameters:
+        - name: years
+          in: query
+          required: true
+          description: Array of years to fetch special dates for
+          schema:
+            type: array
+            items:
+              type: integer
+      responses:
+        200:
+          description: Special dates retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  specialDates:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SpecialDateDTO"
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        403:
+          $ref: "#/components/responses/403"
+        404:
+          $ref: "#/components/responses/404"
+
   /api/organisation/settings:
     get:
       tags:
@@ -1206,96 +1248,6 @@ paths:
                       type: array
                       items:
                         $ref: "#/components/schemas/GanttDateRangeElementDTO"
-        400:
-          $ref: "#/components/responses/400"
-        401:
-          $ref: "#/components/responses/401"
-        403:
-          $ref: "#/components/responses/403"
-        404:
-          $ref: "#/components/responses/404"
-  
-  /api/teams:
-    get:
-      tags:
-        - Teams
-      summary: List all teams
-      description: Retrieves a list of all teams.
-      responses:
-        200:
-          description: A list of teams
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/DepartmentDTO"
-        400:
-          $ref: "#/components/responses/400"
-        401:
-          $ref: "#/components/responses/401"
-        403:
-          $ref: "#/components/responses/403"
-        404:
-          $ref: "#/components/responses/404"
-    
-  /api/teams/{id}:
-    get:
-      tags:
-        - Teams
-      summary: Retrieve a team by ID
-      description: Fetches details of a team by its ID.
-      parameters:
-        - $ref: "#/components/parameters/pathId"
-      responses:
-        200:
-          description: Team details retrieved successfully.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DepartmentDTO"
-        400:
-          $ref: "#/components/responses/400"
-        401:
-          $ref: "#/components/responses/401"
-        403:
-          $ref: "#/components/responses/403"
-        404:
-          $ref: "#/components/responses/404"
-    put:
-      tags:
-        - Teams
-      summary: Update a team
-      description: Updates an existing team with the provided details.
-      parameters:
-        - $ref: "#/components/parameters/pathId"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/DepartmentDTO"
-      responses:
-        200:
-          description: Team updated successfully.
-        400:
-          $ref: "#/components/responses/400"
-        401:
-          $ref: "#/components/responses/401"
-        403:
-          $ref: "#/components/responses/403"
-        404:
-          $ref: "#/components/responses/404"
-    delete:
-      tags:
-        - Teams
-      summary: Delete a team
-      description: Deletes an existing team with the provided ID.
-      parameters:
-        - $ref: "#/components/parameters/pathId"
-      responses:
-        200:
-          description: Team deleted successfully.
         400:
           $ref: "#/components/responses/400"
         401:
