@@ -218,10 +218,6 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/OrganisationRequestCategoryDTO"
-            nationalHolidays:
-              type: array
-              items:
-                $ref: "#/components/schemas/NationalHolidaysDTO"
     GroupDTO:
       type: object
       properties:
@@ -283,14 +279,6 @@ components:
                 type: string
               description:
                 type: string
-    NationalHolidaysDTO:
-      type: object
-      properties:
-        date:
-          type: string
-          format: date
-        name:
-          type: string
     OrganisationSettingsDTO:
       type: object
       properties:
@@ -1100,10 +1088,24 @@ paths:
               schema:
                 type: object
                 properties:
-                  departments:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/DepartmentDTO"
+                  umModule:
+                    type: object
+                    properties:
+                      departments:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/DepartmentDTO"
+                  goModule:
+                    type: object
+                    properties:
+                      organisationRequestCategories:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/OrganisationRequestCategoryDTO"
+                      specialDates:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/SpecialDateDTO"
         400:
           $ref: "#/components/responses/400"
         401:
@@ -1125,10 +1127,24 @@ paths:
             schema:
               type: object
               properties:
-                departments:
-                  type: array
-                  items:
-                    $ref: "#/components/schemas/DepartmentDTO"
+                umModule:
+                  type: object
+                  properties:
+                    departments:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/DepartmentDTO"
+                goModule:
+                  type: object
+                  properties:
+                    organisationRequestCategories:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/OrganisationRequestCategoryDTO"
+                    specialDates:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/SpecialDateDTO"
       responses:
         200:
           description: Organisation settings updated successfully.
