@@ -1249,6 +1249,14 @@ paths:
         - Gantt
       summary: Retrieve Gantt date range elements for employees
       description: Fetches a list of Gantt date range elements for all employees.
+      parameters:
+        - in: query
+          name: requestStatus
+          schema:
+            type: array
+            items:
+              type: string
+          description: Array of request statuses to filter the Gantt date range elements by.
       responses:
         200:
           description: Gantt date range elements retrieved successfully.
