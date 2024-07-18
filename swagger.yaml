@@ -405,6 +405,23 @@ components:
       required: true
       schema:
         type: string
+    years:
+      name: years
+      in: query
+      required: true
+      description: Array of years to filter by.
+      schema:
+        type: array
+        items:
+          type: integer
+    requestStatuses:
+      name: requestStatuses
+      in: query
+      description: Array of request statuses to filter by.
+      schema:
+        type: array
+        items:
+          type: string
 
   responses:
     "400":
@@ -902,7 +919,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  id:
+                  requestId:
                     type: string
                     description: "The ID of the newly created leave request."
         400:
@@ -1074,6 +1091,76 @@ paths:
         404:
           $ref: "#/components/responses/404"
 
+  /api/requests/date-ranges:
+    get:
+      tags:
+        - Requests Date Ranges
+      summary: Retrieve date range elements for employees
+      description: Fetches a list of date range elements for all employees.
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/requestStatuses"
+        - $ref: "#/components/parameters/years"
+      responses:
+        200:
+          description: Gantt date range elements retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    employee:
+                      $ref: "#/components/schemas/EmployeeDTO"
+                    dateRanges:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/GanttDateRangeElementDTO"
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        403:
+          $ref: "#/components/responses/403"
+        404:
+          $ref: "#/components/responses/404"
+
+  /api/requests/date-ranges/employees/{id}:
+    get:
+      tags:
+        - Requests Date Ranges
+      summary: Retrieve date range elements for specific employee
+      description: Fetches a list of date range elements for specific employee.
+      parameters:
+        - $ref: "#/components/parameters/pathId"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/requestStatuses"
+        - $ref: "#/components/parameters/years"
+      responses:
+        200:
+          description: Date range elements retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dateRanges:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/GanttDateRangeElementDTO"
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        403:
+          $ref: "#/components/responses/403"
+        404:
+          $ref: "#/components/responses/404"
+
   /api/organisation/settings:
     get:
       tags:
@@ -1234,44 +1321,6 @@ paths:
                     type: string
                   file_content:
                     type: string
-        400:
-          $ref: "#/components/responses/400"
-        401:
-          $ref: "#/components/responses/401"
-        403:
-          $ref: "#/components/responses/403"
-        404:
-          $ref: "#/components/responses/404"
-
-  /api/gantt/employees:
-    get:
-      tags:
-        - Gantt
-      summary: Retrieve Gantt date range elements for employees
-      description: Fetches a list of Gantt date range elements for all employees.
-      parameters:
-        - in: query
-          name: requestStatus
-          schema:
-            type: array
-            items:
-              type: string
-          description: Array of request statuses to filter the Gantt date range elements by.
-      responses:
-        200:
-          description: Gantt date range elements retrieved successfully.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  properties:
-                    employee:
-                      $ref: "#/components/schemas/EmployeeDTO"
-                    dateRangeElements:
-                      type: array
-                      items:
-                        $ref: "#/components/schemas/GanttDateRangeElementDTO"
         400:
           $ref: "#/components/responses/400"
         401:
