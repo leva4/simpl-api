@@ -125,6 +125,9 @@ components:
         email:
           type: string
           description: The email of the employee.
+        avatarUrl:
+          type: string
+          description: The URL of the employee's avatar.
       required:
         - id
         - firstName
