@@ -312,6 +312,15 @@ components:
         data:
           type: object
           description: A JSON object containing the details of the employee.
+        createdAt:
+          type: string
+          format: date-time
+          description: The date and time the employee was created.
+        changedAt:
+          type: string
+          format: date-time
+        createdBy:
+          $ref: "#/components/schemas/EmployeeDTO"
       required:
         - employeeId
     GanttDateRangeElementDTO:
