@@ -1337,6 +1337,38 @@ paths:
         404:
           $ref: "#/components/responses/404"
 
+  /api/export/employee-data:
+    get:
+      tags:
+        - Export
+      summary: Export all employee data to file
+      description: Downloads an Excel file containing the employee data.
+      parameters:
+        - in: query
+          name: file_format
+          schema:
+            type: string
+      responses:
+        200:
+          description: Excel file containing the employee data.
+          content:
+            application/octet-stream:
+              schema:
+                type: object
+                properties:
+                  filename:
+                    type: string
+                  file_content:
+                    type: string
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        403:
+          $ref: "#/components/responses/403"
+        404:
+          $ref: "#/components/responses/404"
+
   /api/export/employee-data/{id}:
     get:
       tags:
