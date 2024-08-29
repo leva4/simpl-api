@@ -6,6 +6,8 @@ info:
 
 servers:
   - url: http://localhost:5000
+    description: Local server
+  - url: https://5p7ne0s78c.execute-api.eu-central-1.amazonaws.com
     description: Development server
 
 security:
@@ -314,7 +316,7 @@ components:
           description: The unique identifier of the employee.
         data:
           type: object
-          description: A JSON object containing the details of the employee.
+          description: A JSON object containing the dynamic config (Maticni) of the employee.
         createdAt:
           type: string
           format: date-time
@@ -326,7 +328,7 @@ components:
           $ref: "#/components/schemas/EmployeeDTO"
       required:
         - employeeId
-    GanttDateRangeElementDTO:
+    RequestDateRangeDTO:
       type: object
       description: Data transfer object representing a Gantt date range element.
       properties:
@@ -1074,14 +1076,7 @@ paths:
       summary: Retrieve special dates for specified years
       description: Fetches special dates for the given array of years.
       parameters:
-        - name: years
-          in: query
-          required: true
-          description: Array of years to fetch special dates for
-          schema:
-            type: array
-            items:
-              type: integer
+        - $ref: "#/components/parameters/years"
       responses:
         200:
           description: Special dates retrieved successfully.
@@ -1129,7 +1124,7 @@ paths:
                     dateRanges:
                       type: array
                       items:
-                        $ref: "#/components/schemas/GanttDateRangeElementDTO"
+                        $ref: "#/components/schemas/RequestDateRangeDTO"
         400:
           $ref: "#/components/responses/400"
         401:
@@ -1163,7 +1158,7 @@ paths:
                   dateRanges:
                     type: array
                     items:
-                      $ref: "#/components/schemas/GanttDateRangeElementDTO"
+                      $ref: "#/components/schemas/RequestDateRangeDTO"
         400:
           $ref: "#/components/responses/400"
         401:
@@ -1324,6 +1319,39 @@ paths:
       responses:
         200:
           description: Excel file containing the days off data.
+          content:
+            application/octet-stream:
+              schema:
+                type: object
+                properties:
+                  filename:
+                    type: string
+                  file_content:
+                    type: string
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        403:
+          $ref: "#/components/responses/403"
+        404:
+          $ref: "#/components/responses/404"
+
+  /api/export/employee-data/{id}:
+    get:
+      tags:
+        - Export
+      summary: Export employee data to file
+      description: Downloads an Excel file containing the employee data.
+      parameters:
+        - $ref: "#/components/parameters/pathId"
+        - in: query
+          name: file_format
+          schema:
+            type: string
+      responses:
+        200:
+          description: Excel file containing the employee data.
           content:
             application/octet-stream:
               schema:
