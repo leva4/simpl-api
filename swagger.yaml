@@ -436,6 +436,20 @@ components:
         type: array
         items:
           type: string
+    filters:
+      name: filter
+      in: query
+      description: Array of filters.
+      schema:
+        type: array
+        items:
+          type: string
+    sort:
+      name: sort
+      in: query
+      description: Array of sort.
+      schema:
+        type: string
 
   responses:
     "400":
@@ -495,6 +509,7 @@ paths:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/sort"
         - in: query
           name: hasProfile
           schema:
@@ -751,6 +766,61 @@ paths:
           $ref: "#/components/responses/403"
         404:
           $ref: "#/components/responses/404"
+
+  /api/employees/filters:
+  get:
+    tags:
+      - Employees
+    summary: Retrieve available filters for employees
+    description: Returns a list of available filters, including their names, types, and options based on the filter type.
+    responses:
+      200:
+        description: Filters retrieved successfully.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: "Human-readable name of the filter."
+                  slug:
+                    type: string
+                    description: "Slug identifier for the filter (used for querying)."
+                  type:
+                    type: string
+                    description: "Type of the filter (e.g., 'select', 'datetime', 'text')."
+                    enum:
+                      - select
+                      - datetime
+                      - text
+                  options:
+                    type: array
+                    description: "Available options for 'select' type filters."
+                    items:
+                      type: string
+                  dateRange:
+                    type: object
+                    description: "Required date range for 'datetime' type filters."
+                    properties:
+                      startDate:
+                        type: string
+                        format: date-time
+                        description: "Start date of the range."
+                      endDate:
+                        type: string
+                        format: date-time
+                        description: "End date of the range."
+      400:
+        $ref: "#/components/responses/400"
+      401:
+        $ref: "#/components/responses/401"
+      403:
+        $ref: "#/components/responses/403"
+      404:
+        $ref: "#/components/responses/404"
 
   /api/profile:
     get:
@@ -1110,6 +1180,8 @@ paths:
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/requestStatuses"
         - $ref: "#/components/parameters/years"
+        - $ref: "#/components/parameters/filters"
+        - $ref: "#/components/parameters/sort"
       responses:
         200:
           description: Gantt date range elements retrieved successfully.
@@ -1257,6 +1329,46 @@ paths:
         - Export
       summary: Export organisation work schedule to file
       description: Downloads an Excel file containing the working days data for the all employees.
+      parameters:
+        - in: query
+          name: month
+          schema:
+            type: integer
+        - in: query
+          name: year
+          schema:
+            type: integer
+        - in: query
+          name: file_format
+          schema:
+            type: string
+      responses:
+        200:
+          description: Excel file containing the days off data.
+          content:
+            application/octet-stream:
+              schema:
+                type: object
+                properties:
+                  filename:
+                    type: string
+                  file_content:
+                    type: string
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        403:
+          $ref: "#/components/responses/403"
+        404:
+          $ref: "#/components/responses/404"
+
+  /api/export/organisation-employees-go-data:
+    get:
+      tags:
+        - Export
+      summary: Export organisation employee go data to file
+      description: Downloads an Excel file containing the employee go data for the all employees.
       parameters:
         - in: query
           name: month
