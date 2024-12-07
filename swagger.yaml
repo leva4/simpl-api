@@ -448,6 +448,9 @@ components:
         displayLabel:
           type: string
           description: The label to be displayed in the UI
+        formName:
+          type: string
+          description: The name of the form to be used for the alarm
         isActive:
           type: boolean
           description: Flag to indicate if the alarm is active
