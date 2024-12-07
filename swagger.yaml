@@ -461,10 +461,13 @@ components:
         frequency:
           type: string
           description: The frequency of the alarm
-        createdAt:
+        changedAt:
           type: string
           format: date-time
-          description: The date and time the alarm was created
+          description: The date and time the alarm was changed
+      required:
+        - fieldName
+        - displayLabel
 
   parameters:
     page:
