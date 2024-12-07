@@ -1496,6 +1496,8 @@ paths:
           name: file_format
           schema:
             type: string
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/filters"
       responses:
         200:
           description: Excel file containing the days off data.
@@ -1536,6 +1538,8 @@ paths:
           name: file_format
           schema:
             type: string
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/filters"
       responses:
         200:
           description: Excel file containing the days off data.
@@ -1614,6 +1618,8 @@ paths:
           name: file_format
           schema:
             type: string
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/filters"
       responses:
         200:
           description: Excel file containing the employee data.
