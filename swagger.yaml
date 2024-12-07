@@ -454,10 +454,9 @@ components:
         isActive:
           type: boolean
           description: Flag to indicate if the alarm is active
-        startsAt:
-          type: string
-          format: date-time
-          description: The date and time the alarm starts
+        startDaysBefore:
+          type: integer
+          description: The number of days before the alarm should start
         frequency:
           type: string
           description: The frequency of the alarm
