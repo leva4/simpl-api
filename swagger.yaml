@@ -385,6 +385,79 @@ components:
         - id
         - date
         - name
+    FilterDTO:
+      type: object
+      properties:
+        label:
+          type: string
+          description: "Human-readable name of the filter."
+        slug:
+          type: string
+          description: "Slug identifier for the filter (used for querying)."
+        type:
+          type: string
+          description: "Type of the filter (e.g., 'select', 'datetime', 'text')."
+          enum:
+            - select
+            - datetime
+            - amount
+            - text
+        options:
+          type: array
+          description: "Available options for 'select' type filters."
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: "Value of the option."
+              id:
+                type: string
+                description: "Id of the option."
+            required:
+              - option
+              - id
+        dateRange:
+          $ref: "#/components/schemas/DateRangeDTO"
+      required:
+        - label
+        - slug
+        - type
+    DateRangeDTO:
+      type: object
+      description: "Required date range for 'datetime' type filters."
+      properties:
+        startDate:
+          type: string
+          format: date-time
+          description: "Start date of the range."
+        endDate:
+          type: string
+          format: date-time
+          description: "End date of the range."
+      required:
+        - startDate
+        - endDate
+    AlarmConfigDTO:
+      type: object
+      properties:
+      fieldName:
+        type: string
+        description: The name of the field to be used for the alarm
+      displayLabel:
+        type: string
+        description: The label to be displayed in the UI
+      startsAt:
+        type: string
+        format: date-time
+        description: The date and time the alarm starts
+      frequency:
+        type: string
+        description: The frequency of the alarm
+      createdAt:
+        type: string
+        format: date-time
+        description: The date and time the alarm was created
 
   parameters:
     page:
@@ -441,9 +514,7 @@ components:
       in: query
       description: Array of filters.
       schema:
-        type: array
-        items:
-          type: string
+        type: string
     sort:
       name: sort
       in: query
@@ -510,6 +581,7 @@ paths:
         - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/filters"
         - in: query
           name: hasProfile
           schema:
@@ -781,38 +853,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                      description: "Human-readable name of the filter."
-                    slug:
-                      type: string
-                      description: "Slug identifier for the filter (used for querying)."
-                    type:
-                      type: string
-                      description: "Type of the filter (e.g., 'select', 'datetime', 'text')."
-                      enum:
-                        - select
-                        - datetime
-                        - text
-                    options:
-                      type: array
-                      description: "Available options for 'select' type filters."
-                      items:
-                        type: string
-                    dateRange:
-                      type: object
-                      description: "Required date range for 'datetime' type filters."
-                      properties:
-                        startDate:
-                          type: string
-                          format: date-time
-                          description: "Start date of the range."
-                        endDate:
-                          type: string
-                          format: date-time
-                          description: "End date of the range."
+                  $ref: "#/components/schemas/FilterDTO"
         400:
           $ref: "#/components/responses/400"
         401:
@@ -1314,6 +1355,62 @@ paths:
       responses:
         200:
           description: Organisation settings updated successfully.
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        403:
+          $ref: "#/components/responses/403"
+        404:
+          $ref: "#/components/responses/404"
+
+  /api/alarms/settings:
+    get:
+      tags:
+        - Alarms
+      summary: Retrieve alarm settings
+      description: Fetches alarm settings.
+      responses:
+        200:
+          description: Alarm settings retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AlarmConfigDTO"
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        403:
+          $ref: "#/components/responses/403"
+        404:
+          $ref: "#/components/responses/404"
+
+    post:
+      tags:
+        - Alarms
+      summary: Create a new alarm
+      description: Creates a new alarm with the provided details.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/AlarmConfigDTO"
+      responses:
+        201:
+          description: Alarm created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alarmId:
+                    type: string
         400:
           $ref: "#/components/responses/400"
         401:
