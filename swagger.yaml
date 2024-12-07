@@ -481,7 +481,8 @@ components:
           type: string
           description: The name of parent form
         fieldValue:
-          type: date-time
+          type: string
+          format: date-time
           description: The value of the field
         employee:
           $ref: "#/components/schemas/EmployeeDTO"
