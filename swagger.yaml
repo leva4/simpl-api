@@ -440,24 +440,25 @@ components:
         - endDate
     AlarmConfigDTO:
       type: object
+      description: Data transfer object representing an alarm configuration.
       properties:
-      fieldName:
-        type: string
-        description: The name of the field to be used for the alarm
-      displayLabel:
-        type: string
-        description: The label to be displayed in the UI
-      startsAt:
-        type: string
-        format: date-time
-        description: The date and time the alarm starts
-      frequency:
-        type: string
-        description: The frequency of the alarm
-      createdAt:
-        type: string
-        format: date-time
-        description: The date and time the alarm was created
+        fieldName:
+          type: string
+          description: The name of the field to be used for the alarm
+        displayLabel:
+          type: string
+          description: The label to be displayed in the UI
+        startsAt:
+          type: string
+          format: date-time
+          description: The date and time the alarm starts
+        frequency:
+          type: string
+          description: The frequency of the alarm
+        createdAt:
+          type: string
+          format: date-time
+          description: The date and time the alarm was created
 
   parameters:
     page:
