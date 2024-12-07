@@ -1477,38 +1477,6 @@ paths:
         404:
           $ref: "#/components/responses/404"
 
-    post:
-      tags:
-        - Alarms
-      summary: Create a new alarm notification
-      description: Creates a new alarm notification with the provided details.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: "#/components/schemas/AlarmNotificationDTO"
-      responses:
-        201:
-          description: Alarm notification created successfully.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  alarmNotificationId:
-                    type: string
-        400:
-          $ref: "#/components/responses/400"
-        401:
-          $ref: "#/components/responses/401"
-        403:
-          $ref: "#/components/responses/403"
-        404:
-          $ref: "#/components/responses/404"
-
   /api/export/organisation-work-schedule:
     get:
       tags:
