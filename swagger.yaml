@@ -9,6 +9,8 @@ servers:
     description: Local server
   - url: https://5p7ne0s78c.execute-api.eu-central-1.amazonaws.com
     description: Development server
+  - url: https://4rq0wzrrs6.execute-api.eu-central-1.amazonaws.com
+    description: Staging - Bear marketing server
 
 security:
   - BearerAuth: []
