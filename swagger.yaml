@@ -170,10 +170,6 @@ components:
       type: object
       description: Data transfer object representing an employee's GO module information.
       properties:
-        avgDaysOffPerMonth:
-          type: number
-          format: float
-          description: The average number of days off taken by the employee per month.
         longestAbsence:
           type: number
           format: integer
