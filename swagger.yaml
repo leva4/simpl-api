@@ -164,6 +164,41 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/EmployeeDTO"
+        employeeGOInfo:
+          $ref: "#/components/schemas/EmployeeGOInfoDTO"
+    EmployeeGOInfoDTO:
+      type: object
+      description: Data transfer object representing an employee's GO module information.
+      properties:
+        takenDaysOff:
+          type: integer
+          description: The number of days off that have been taken by the employee.
+        avgDaysOffPerMonth:
+          type: number
+          format: float
+          description: The average number of days off taken by the employee per month.
+        longestAbsence:
+          type: number
+          format: integer
+          description: The longest absence duration of the employee in days.
+        nextAbsence:
+          type: string
+          format: date-time
+          description: The date and time of the next absence for the employee.
+        quarterlyAbsences:
+          type: array
+          items:
+            type: object
+            properties:
+              year:
+                type: integer
+                description: The year of the quarterly absence.
+              quarter:
+                type: integer
+                description: The quarter of the year (1-4).
+              daysOff:
+                type: integer
+                description: The number of days off taken in that quarter.
     ProfileDTO:
       type: object
       properties:
