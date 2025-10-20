@@ -527,6 +527,38 @@ components:
         - formName
         - fieldValue
         - employee
+    EmployeeFileDTO:
+      type: object
+      description: Data transfer object representing an employee file.
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the file
+        fileName:
+          type: string
+          description: The name of the uploaded file
+        fileUrl:
+          type: string
+          description: The URL to download/access the file
+        uploadedAt:
+          type: string
+          format: date-time
+          description: The date and time when the file was uploaded
+        fileType:
+          type: string
+          description: The MIME type of the file (e.g., application/pdf, image/jpeg)
+        fileSize:
+          type: integer
+          format: int64
+          description: The size of the file in bytes
+        uploadedBy:
+          $ref: "#/components/schemas/EmployeeDTO"
+          description: The name of the user who uploaded the file
+      required:
+        - id
+        - fileName
+        - fileUrl
+        - uploadedAt
 
   parameters:
     page:
@@ -932,6 +964,63 @@ paths:
         404:
           $ref: "#/components/responses/404"
 
+  /api/employees/{id}/files:
+    get:
+      tags:
+        - Employees
+      summary: Get all files for an employee
+      description: Retrieves a list of all files uploaded for a specific employee.
+      parameters:
+        - $ref: "#/components/parameters/pathId"
+      responses:
+        200:
+          description: Files retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EmployeeFileDTO"
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        403:
+          $ref: "#/components/responses/403"
+        404:
+          $ref: "#/components/responses/404"
+
+  /api/employees/{id}/files/{fileId}:
+    delete:
+      tags:
+        - Employees
+      summary: Delete an employee file
+      description: Deletes a specific file for an employee.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The employee ID.
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The file ID to delete.
+      responses:
+        200:
+          description: File deleted successfully.
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        403:
+          $ref: "#/components/responses/403"
+        404:
+          $ref: "#/components/responses/404"
+
   /api/profile:
     get:
       tags:
@@ -972,6 +1061,9 @@ paths:
                   type: string
                 languageCode:
                   type: string
+                avatarBase64:
+                  type: string
+                  description: Optional base64 encoded image of the user's profile photo.
                 notificationsIds:
                   type: array
                   items:
@@ -1499,11 +1591,13 @@ paths:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
         - in: query
-          name: employeeId
-          schema:
-            type: string
+          name: employeeIds
+          description: Array of employee IDs to filter notifications by. Can be passed as repeated query params (?employeeIds=1&employeeIds=2) or a comma-separated list (?employeeIds=1,2).
           required: false
-          description: Filter notifications for a specific employee by ID
+          schema:
+            type: array
+            items:
+              type: string
       responses:
         200:
           description: Alarm notifications retrieved successfully.
@@ -1514,35 +1608,6 @@ paths:
                 properties:
                   pagination:
                     $ref: "#/components/schemas/Pagination"
-                  items:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/AlarmNotificationDTO"
-        400:
-          $ref: "#/components/responses/400"
-        401:
-          $ref: "#/components/responses/401"
-        403:
-          $ref: "#/components/responses/403"
-        404:
-          $ref: "#/components/responses/404"
-
-  /api/alarms/notifications/employees/{id}:
-    get:
-      tags:
-        - Alarms
-      summary: Retrieve alarm notifications for a specific employee
-      description: Fetches alarm notifications for a specific employee by their ID.
-      parameters:
-        - $ref: "#/components/parameters/pathId"
-      responses:
-        200:
-          description: Alarm notifications retrieved successfully.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
                   items:
                     type: array
                     items:
@@ -1661,6 +1726,39 @@ paths:
           name: year
           schema:
             type: integer
+        - in: query
+          name: file_format
+          schema:
+            type: string
+      responses:
+        200:
+          description: Excel file containing the days off data.
+          content:
+            application/octet-stream:
+              schema:
+                type: object
+                properties:
+                  filename:
+                    type: string
+                  file_content:
+                    type: string
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        403:
+          $ref: "#/components/responses/403"
+        404:
+          $ref: "#/components/responses/404"
+
+  /api/export/organisation-go-requests/{id}:
+    get:
+      tags:
+        - Export
+      summary: Export organisation absence requests to file
+      description: Downloads an Excel file containing the days off data for the all employees.
+      parameters:
+        - $ref: "#/components/parameters/pathId"
         - in: query
           name: file_format
           schema:
