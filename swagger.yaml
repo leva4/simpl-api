@@ -3,26 +3,42 @@ info:
   version: 1.1.0
   title: SIMPL Rest API
   description: API for managing user accounts and their details.
-
 servers:
-  - url: http://localhost:5000
-    description: Local server
-  - url: https://5p7ne0s78c.execute-api.eu-central-1.amazonaws.com
-    description: Development server
-  - url: https://4rq0wzrrs6.execute-api.eu-central-1.amazonaws.com
-    description: Staging - Bear marketing server
-
+- url: http://localhost:5000
+  description: Local server
+- url: https://5p7ne0s78c.execute-api.eu-central-1.amazonaws.com
+  description: Development server
+- url: https://4rq0wzrrs6.execute-api.eu-central-1.amazonaws.com
+  description: Staging - Bear marketing server
 security:
-  - BearerAuth: []
-
+- BearerAuth: []
 components:
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-
   schemas:
+    AbsenceDefaultsDTO:
+      type: object
+      description: Default configuration for the absence module.
+      properties:
+        defaultDaysPerYear:
+          type: integer
+          description: Default number of absence days for newly created users.
+        defaultCarryOverDays:
+          type: integer
+          description: Default number of days that can be carried over to next year.
+        defaultCategories:
+          type: array
+          description: Default categories assigned to new users.
+          items:
+            type: string
+        yearStartMonth:
+          type: integer
+          description: Month when the absence year starts (1-12).
+          minimum: 1
+          maximum: 12
     Pagination:
       type: object
       properties:
@@ -37,16 +53,16 @@ components:
           type: integer
           description: The total number of items across all pages.
       required:
-        - currentPage
-        - totalPages
-        - totalItems
-    RequestDTO:
+      - currentPage
+      - totalPages
+      - totalItems
+    AbsenceRequestDTO:
       type: object
       properties:
         id:
           type: string
         employee:
-          $ref: "#/components/schemas/EmployeeDTO"
+          $ref: '#/components/schemas/EmployeeDTO'
         createdAt:
           type: string
           format: date-time
@@ -54,13 +70,13 @@ components:
           type: string
           format: date-time
         createdBy:
-          $ref: "#/components/schemas/EmployeeDTO"
+          $ref: '#/components/schemas/EmployeeDTO'
         allowedActions:
           type: array
           items:
             type: string
         status:
-          type: string
+          $ref: '#/components/schemas/AbsenceRequestStatusEnum'
         daysOffRequested:
           type: integer
         startDate:
@@ -72,26 +88,26 @@ components:
         categories:
           type: array
           items:
-            $ref: "#/components/schemas/RequestCategoryDTO"
+            $ref: '#/components/schemas/AbsenceCategoryDTO'
         subcategories:
           type: array
           items:
-            $ref: "#/components/schemas/RequestCategoryDTO"
-    RequestStatusDetailsDTO:
+            $ref: '#/components/schemas/AbsenceCategoryDTO'
+    RequestStatusHistoryDTO:
       type: object
       properties:
         status:
-          type: string
-          description: "Current status of the request (e.g., Pending, Approved, etc.)."
+          $ref: '#/components/schemas/AbsenceRequestStatusEnum'
+          description: Current status of the request (e.g., Pending, Approved, etc.).
         changedAt:
           type: string
           format: date-time
-          description: "Timestamp of when the request status was last changed."
+          description: Timestamp of when the request status was last changed.
         changedBy:
-          $ref: "#/components/schemas/EmployeeDTO"
+          $ref: '#/components/schemas/EmployeeDTO'
         note:
           type: string
-          description: "Note associated with the status change."
+          description: Note associated with the status change.
     DepartmentDTO:
       type: object
       properties:
@@ -105,8 +121,8 @@ components:
           type: string
           description: A description of the team within the department.
       required:
-        - id
-        - departmentName
+      - id
+      - departmentName
     EmployeeDTO:
       type: object
       description: Data transfer object representing an employee.
@@ -125,7 +141,7 @@ components:
           type: string
           description: The job title of the employee within the organization.
         department:
-          $ref: "#/components/schemas/DepartmentDTO"
+          $ref: '#/components/schemas/DepartmentDTO'
         email:
           type: string
           description: The email of the employee.
@@ -137,38 +153,40 @@ components:
           format: date-time
           description: The date and time the employee was created.
       required:
-        - id
-        - firstName
-        - lastName
-    EmployeeGOModuleDetailsDTO:
+      - id
+      - firstName
+      - lastName
+    EmployeeAbsenceBalanceDTO:
       type: object
-      description: Data transfer object representing an employee's go module details.
+      description: Data transfer object representing an employee's absence module
+        details.
       properties:
         requestCategories:
           type: array
           items:
-            $ref: "#/components/schemas/RequestCategoryDTO"
+            $ref: '#/components/schemas/AbsenceCategoryDTO'
         supervisors:
           type: array
           items:
-            $ref: "#/components/schemas/EmployeeDTO"
+            $ref: '#/components/schemas/EmployeeDTO'
         supervisees:
           type: array
           items:
-            $ref: "#/components/schemas/EmployeeDTO"
+            $ref: '#/components/schemas/EmployeeDTO'
         representatives:
           type: array
           items:
-            $ref: "#/components/schemas/EmployeeDTO"
+            $ref: '#/components/schemas/EmployeeDTO'
         representees:
           type: array
           items:
-            $ref: "#/components/schemas/EmployeeDTO"
-        employeeGOInfo:
-          $ref: "#/components/schemas/EmployeeGOInfoDTO"
-    EmployeeGOInfoDTO:
+            $ref: '#/components/schemas/EmployeeDTO'
+        employeeAbsenceInfo:
+          $ref: '#/components/schemas/EmployeeAbsenceInfoDTO'
+    EmployeeAbsenceInfoDTO:
       type: object
-      description: Data transfer object representing an employee's GO module information.
+      description: Data transfer object representing an employee's absence module
+        information.
       properties:
         longestAbsence:
           type: number
@@ -203,7 +221,7 @@ components:
           format: email
           description: The email address associated with the user's profile.
         employee:
-          $ref: "#/components/schemas/EmployeeDTO"
+          $ref: '#/components/schemas/EmployeeDTO'
         language:
           type: string
           description: The language preference code for the user's profile.
@@ -211,7 +229,7 @@ components:
           description: A list of notification types associated with the user's profile.
           type: array
           items:
-            $ref: "#/components/schemas/NotificationTypeDTO"
+            $ref: '#/components/schemas/NotificationTypeDTO'
     NotificationTypeDTO:
       type: object
       properties:
@@ -231,32 +249,32 @@ components:
       type: object
       properties:
         currentUser:
-          $ref: "#/components/schemas/ProfileDTO"
+          $ref: '#/components/schemas/ProfileDTO'
         permissionGroups:
           type: array
           items:
-            $ref: "#/components/schemas/GroupDTO"
+            $ref: '#/components/schemas/GroupDTO'
         permissions:
           type: array
           items:
-            $ref: "#/components/schemas/PermissionDTO"
+            $ref: '#/components/schemas/PermissionDTO'
         umModule:
           type: object
           properties:
             departments:
               type: array
               items:
-                $ref: "#/components/schemas/DepartmentDTO"
-        goModule:
+                $ref: '#/components/schemas/DepartmentDTO'
+        absenceModule:
           type: object
           properties:
             details:
-              description: Current user employee go module details
-              $ref: "#/components/schemas/EmployeeGOModuleDetailsDTO"
+              description: Current user employee absence module details
+              $ref: '#/components/schemas/EmployeeAbsenceBalanceDTO'
             organisationRequestCategories:
               type: array
               items:
-                $ref: "#/components/schemas/OrganisationRequestCategoryDTO"
+                $ref: '#/components/schemas/OrganisationAbsenceCategoryDTO'
     GroupDTO:
       type: object
       properties:
@@ -277,7 +295,7 @@ components:
           type: string
         key:
           type: string
-    RequestCategoryDTO:
+    AbsenceCategoryDTO:
       type: object
       properties:
         id:
@@ -300,7 +318,11 @@ components:
           type: boolean
         year:
           type: integer
-    OrganisationRequestCategoryDTO:
+        subcategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/AbsenceSubcategoryDTO'
+    OrganisationAbsenceCategoryDTO:
       type: object
       properties:
         id:
@@ -326,10 +348,11 @@ components:
         departments:
           type: array
           items:
-            $ref: "#/components/schemas/DepartmentDTO"
+            $ref: '#/components/schemas/DepartmentDTO'
     GeneralErrorDTO:
       type: object
-      description: A general error data transfer object that provides details about an API error.
+      description: A general error data transfer object that provides details about
+        an API error.
       properties:
         errorMessage:
           type: string
@@ -339,11 +362,12 @@ components:
           description: A numeric code representing the type of error.
         displayErrorMessage:
           type: string
-          description: A message suitable for displaying to end-users, potentially less technical.
+          description: A message suitable for displaying to end-users, potentially
+            less technical.
       required:
-        - errorMessage
-        - errorCode
-        - displayErrorMessage
+      - errorMessage
+      - errorCode
+      - displayErrorMessage
     EmployeeDetailsDTO:
       type: object
       properties:
@@ -351,8 +375,11 @@ components:
           type: string
           description: The unique identifier of the employee.
         data:
-          type: object
-          description: A JSON object containing the dynamic config (Maticni) of the employee.
+          type: array
+          items:
+            $ref: '#/components/schemas/FormCategoryConfigDTO'
+          description: A JSON array containing the dynamic config (Maticni) of the
+            employee.
         createdAt:
           type: string
           format: date-time
@@ -361,10 +388,10 @@ components:
           type: string
           format: date-time
         createdBy:
-          $ref: "#/components/schemas/EmployeeDTO"
+          $ref: '#/components/schemas/EmployeeDTO'
       required:
-        - employeeId
-    RequestDateRangeDTO:
+      - employeeId
+    AbsenceRequestDateRangeDTO:
       type: object
       description: Data transfer object representing a Gantt date range element.
       properties:
@@ -387,19 +414,20 @@ components:
           description: The display text for the date range element.
         hexBackgroundColor:
           type: string
-          description: The hexadecimal color code for the background of the date range element.
+          description: The hexadecimal color code for the background of the date range
+            element.
         hexTextColor:
           type: string
           description: The hexadecimal color code for the text of the date range element.
       required:
-        - requestId
-        - startDate
-        - endDate
-        - typeId
-        - displayText
-        - hexBackgroundColor
-        - hexTextColor
-    SpecialDateDTO:
+      - requestId
+      - startDate
+      - endDate
+      - typeId
+      - displayText
+      - hexBackgroundColor
+      - hexTextColor
+    AbsenceSpecialDateDTO:
       type: object
       description: Data transfer object representing a special date.
       properties:
@@ -416,64 +444,119 @@ components:
         hexBackgroundColor:
           type: string
           description: Hex color code for the background color
-          example: "#FFCCCC"
+          example: '#FFCCCC'
       required:
-        - id
-        - date
-        - name
+      - id
+      - date
+      - name
     FilterDTO:
       type: object
       properties:
         label:
           type: string
-          description: "Human-readable name of the filter."
+          description: Human-readable name of the filter.
         slug:
           type: string
-          description: "Slug identifier for the filter (used for querying)."
+          description: Slug identifier for the filter (used for querying).
         type:
           type: string
-          description: "Type of the filter (e.g., 'select', 'datetime', 'text')."
+          description: Type of the filter (e.g., 'select', 'datetime', 'amount', 'text').
           enum:
-            - select
-            - datetime
-            - amount
-            - text
+          - select
+          - datetime
+          - amount
+          - text
         options:
           type: array
-          description: "Available options for 'select' type filters."
+          description: Available options for 'select' type filters.
           items:
             type: object
             properties:
               name:
                 type: string
-                description: "Value of the option."
+                description: Value of the option.
               id:
                 type: string
-                description: "Id of the option."
+                description: Id of the option.
             required:
-              - option
-              - id
+            - option
+            - id
         dateRange:
-          $ref: "#/components/schemas/DateRangeDTO"
+          $ref: '#/components/schemas/DateRangeDTO'
       required:
-        - label
-        - slug
-        - type
+      - label
+      - slug
+    AbsenceCategorySettingsDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        hexBackgroundColor:
+          type: string
+        hexTextColor:
+          type: string
+        expirationDate:
+          type: string
+          format: date-time
+        subcategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/AbsenceSubcategoryDTO'
+    AbsenceSubcategoryDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        validityStartDate:
+          type: string
+          format: date
+        validityEndDate:
+          type: string
+          format: date
+        remainingDaysOff:
+          type: number
+        totalDaysOff:
+          type: number
+        isTransition:
+          type: boolean
+    EmployeeRelationshipsDTO:
+      type: object
+      properties:
+        supervisorEmployeeIds:
+          type: array
+          items:
+            type: string
+        representeeEmployeeIds:
+          type: array
+          items:
+            type: string
+        superviseeEmployeeIds:
+          type: array
+          items:
+            type: string
     DateRangeDTO:
       type: object
-      description: "Required date range for 'datetime' type filters."
+      description: Required date range for 'datetime' type filters.
       properties:
         startDate:
           type: string
           format: date-time
-          description: "Start date of the range."
+          description: Start date of the range.
         endDate:
           type: string
           format: date-time
-          description: "End date of the range."
+          description: End date of the range.
       required:
-        - startDate
-        - endDate
+      - startDate
+      - endDate
     AlarmConfigDTO:
       type: object
       description: Data transfer object representing an alarm configuration.
@@ -504,8 +587,8 @@ components:
           format: date-time
           description: The date and time the alarm was changed
       required:
-        - fieldName
-        - label
+      - fieldName
+      - label
     AlarmNotificationDTO:
       type: object
       description: Data transfer object representing an alarm notification.
@@ -521,12 +604,12 @@ components:
           format: date-time
           description: The value of the field
         employee:
-          $ref: "#/components/schemas/EmployeeDTO"
+          $ref: '#/components/schemas/EmployeeDTO'
       required:
-        - label
-        - formName
-        - fieldValue
-        - employee
+      - label
+      - formName
+      - fieldValue
+      - employee
     EmployeeFileDTO:
       type: object
       description: Data transfer object representing an employee file.
@@ -552,16 +635,17 @@ components:
           format: int64
           description: The size of the file in bytes
         uploadedBy:
-          $ref: "#/components/schemas/EmployeeDTO"
+          $ref: '#/components/schemas/EmployeeDTO'
           description: The Employee who uploaded the file
       required:
-        - id
-        - fileName
-        - downloadPath
-        - uploadedAt
+      - id
+      - fileName
+      - downloadPath
+      - uploadedAt
     PresignedUploadDTO:
       type: object
-      description: Data transfer object containing presigned POST URL and fields for S3 upload.
+      description: Data transfer object containing presigned POST URL and fields for
+        S3 upload.
       properties:
         uploadUrl:
           type: string
@@ -570,11 +654,198 @@ components:
           type: object
           additionalProperties:
             type: string
-          description: Form fields required for the multipart upload (key, policy, signature, etc.)
+          description: Form fields required for the multipart upload (key, policy,
+            signature, etc.)
       required:
-        - uploadUrl
-        - fields
-
+      - uploadUrl
+      - fields
+    EmployeeVacationStatusDTO:
+      type: object
+      properties:
+        employee:
+          $ref: '#/components/schemas/EmployeeDTO'
+        vacationData:
+          type: array
+          items:
+            $ref: '#/components/schemas/YearlyVacationDataDTO'
+    YearlyVacationDataDTO:
+      type: object
+      properties:
+        year:
+          type: integer
+        categoryId:
+          type: string
+        categoryName:
+          type: string
+        totalDays:
+          type: integer
+        spentDays:
+          type: integer
+        remainingDays:
+          type: integer
+    BulkVacationUpdateDTO:
+      type: object
+      properties:
+        employeeId:
+          type: string
+        updates:
+          type: array
+          items:
+            type: object
+            properties:
+              year:
+                type: integer
+              categoryId:
+                type: string
+              totalDays:
+                type: integer
+    EmployeeSettingsDTO:
+      type: object
+      properties:
+        supervisorEmployeeIds:
+          type: array
+          items:
+            type: string
+          description: IDs of employees who supervise THIS employee
+        representeeEmployeeIds:
+          type: array
+          items:
+            type: string
+          description: IDs of employees THIS employee represents (View Only)
+        superviseeEmployeeIds:
+          type: array
+          items:
+            type: string
+          description: IDs of employees THIS employee supervises (Approve Rights)
+    RequestSubcategoryConfigDTO:
+      type: object
+      properties:
+        requestSubcategoryId:
+          type: string
+          nullable: true
+          description: Omit to CREATE new subcategory
+        requestSubcategoryName:
+          type: string
+        totalRequestSubcategoryDaysOff:
+          type: integer
+    RequestCategoryYearDTO:
+      type: object
+      properties:
+        year:
+          type: integer
+        totalRequestCategoryDaysOff:
+          type: integer
+        subcategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/RequestSubcategoryConfigDTO'
+    RequestCategoryConfigDTO:
+      type: object
+      properties:
+        requestCategoryId:
+          type: string
+          nullable: true
+          description: Omit to CREATE new category
+        requestCategoryName:
+          type: string
+        requestCategoryDescription:
+          type: string
+        hexBackgroundColor:
+          type: string
+          nullable: true
+        hexTextColor:
+          type: string
+          nullable: true
+        expirationDate:
+          type: string
+          format: date-time
+          nullable: true
+        years:
+          type: array
+          items:
+            $ref: '#/components/schemas/RequestCategoryYearDTO'
+    EmployeeDataVersionDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+        versionName:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+      - id
+      - versionName
+      - createdAt
+    ApiEmployeesIdVersionsPostRequest:
+      type: object
+      properties:
+        versionName:
+          type: string
+        data:
+          type: object
+      required:
+      - versionName
+      - data
+    AbsenceRequestStatusEnum:
+      type: string
+      enum:
+      - Pending
+      - Approved
+      - Rejected
+      - Canceled
+    FormCategoryConfigDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormFieldConfigDTO'
+    FormFieldConfigDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        type:
+          type: string
+        value:
+          nullable: true
+          type: object
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+    ExportJob:
+      type: object
+      properties:
+        jobId:
+          type: string
+        status:
+          type: string
+          enum:
+          - PENDING
+          - PROCESSING
+          - COMPLETED
+          - FAILED
+        downloadUrl:
+          type: string
   parameters:
     page:
       name: page
@@ -625,10 +896,10 @@ components:
         type: array
         items:
           type: string
-    filters:
+    filter:
       name: filter
       in: query
-      description: Array of filters.
+      description: JSON string for advanced filtering.
       schema:
         type: string
     sort:
@@ -637,71 +908,430 @@ components:
       description: Array of sort.
       schema:
         type: string
-
   responses:
-    "400":
+    '400':
       description: The server could not understand the request.
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/GeneralErrorDTO"
-    "401":
+            $ref: '#/components/schemas/ProblemDetails'
+    '401':
       description: Authorization information is missing or invalid.
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/GeneralErrorDTO"
-    "403":
+            $ref: '#/components/schemas/ProblemDetails'
+    '403':
       description: User does not have the right credentials.
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/GeneralErrorDTO"
-    "404":
+            $ref: '#/components/schemas/ProblemDetails'
+    '404':
       description: The requested resource was not found.
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/GeneralErrorDTO"
-
+            $ref: '#/components/schemas/ProblemDetails'
 paths:
-  /api/workspace/session:
+  /api/v1/absences/defaults:
     get:
       tags:
-        - Workspace
-      summary: "Retrieve current workspace session"
-      description: "Fetches details of a workspace session."
+      - Absences
+      summary: Retrieve absence module defaults
+      description: Fetches default configuration for the absence module (e.g., default days for new users).
       responses:
         200:
-          description: "Workspace sessions retrieved successfully."
+          description: Absence defaults retrieved successfully.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/WorkspaceSessionDTO"
+                $ref: '#/components/schemas/AbsenceDefaultsDTO'
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-  /api/employees:
+          $ref: '#/components/responses/404'
+    put:
+      tags:
+      - Absences
+      summary: Update absence module defaults
+      description: Updates default configuration for the absence module.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AbsenceDefaultsDTO'
+      responses:
+        200:
+          description: Absence defaults updated successfully.
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+  /api/v1/absences/balances:
     get:
       tags:
-        - Employees
+      - Absences
+      summary: Retrieve bulk vacation status for employees
+      description: Fetches vacation status (total, spent, remaining) for multiple
+        employees for current and next year.
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/search'
+      - $ref: '#/components/parameters/sort'
+      - name: departmentId
+        in: query
+        schema:
+          type: string
+        description: Filter by department ID
+      - name: year
+        in: query
+        schema:
+          type: integer
+        description: The base year to fetch data for (defaults to current year)
+      - name: nextYear
+        in: query
+        schema:
+          type: boolean
+          default: true
+        description: Whether to include data for the next year
+      responses:
+        200:
+          description: Bulk vacation status retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EmployeeVacationStatusDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+    patch:
+      tags:
+      - Absences
+      summary: Bulk update vacation balances
+      description: Updates vacation balances for multiple employees at once.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                updates:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      employeeId:
+                        type: string
+                      categoryId:
+                        type: string
+                      year:
+                        type: integer
+                      totalDays:
+                        type: number
+                      usedDays:
+                        type: number
+                    required:
+                    - employeeId
+                    - categoryId
+      responses:
+        200:
+          description: Balances updated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  updatedCount:
+                    type: integer
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+  /api/v1/absences/balances/{employeeId}:
+    get:
+      tags:
+      - Absences
+      summary: Retrieve balance for a specific employee
+      description: Fetches absence balance data for a specific employee.
+      parameters:
+      - in: path
+        name: employeeId
+        required: true
+        schema:
+          type: string
+        description: The unique identifier of the employee.
+      - name: year
+        in: query
+        schema:
+          type: integer
+        description: The year to fetch data for (defaults to current year)
+      responses:
+        200:
+          description: Employee balance retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeAbsenceBalanceDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+    put:
+      tags:
+      - Absences
+      summary: Update balance for a specific employee
+      description: Updates absence balance data for a specific employee.
+      parameters:
+      - in: path
+        name: employeeId
+        required: true
+        schema:
+          type: string
+        description: The unique identifier of the employee.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeAbsenceBalanceDTO'
+      responses:
+        200:
+          description: Employee balance updated successfully.
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+  /api/v1/absences:
+    get:
+      summary: List all absence requests
+      description: Retrieves a list of all absence requests based on query parameters.
+      tags:
+      - Absences
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/filter'
+      - in: query
+        name: employeeId
+        schema:
+          type: string
+      - in: query
+        name: startDate
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: endDate
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: createdAt
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: changedAt
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: requestStatus
+        schema:
+          type: string
+      - in: query
+        name: includeRepresentees
+        schema:
+          type: boolean
+      - in: query
+        name: includeRepresentatives
+        schema:
+          type: boolean
+      - in: query
+        name: includeSupervisees
+        schema:
+          type: boolean
+      - in: query
+        name: includeSupervisors
+        schema:
+          type: boolean
+      - in: query
+        name: includeCurrentEmployee
+        schema:
+          type: boolean
+      responses:
+        200:
+          description: A list of requests
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AbsenceRequestDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+    post:
+      tags:
+      - Absences
+      summary: Create a new absence request
+      description: Allows users to create a new absence request with details such
+        as start and end dates, the number of days off, a note, and the type of request.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                employeeId:
+                  type: string
+                  description: The ID of the employee creating the request.
+                startDate:
+                  type: string
+                  format: date
+                  description: Start date of the absence in YYYY-MM-DD format.
+                endDate:
+                  type: string
+                  format: date
+                  description: End date of the absence in YYYY-MM-DD format.
+                note:
+                  type: string
+                  description: Additional notes regarding the absence request.
+                categoryId:
+                  type: string
+                  description: The ID of the request category type (e.g., vacation,
+                    sick absence).
+                subCategoryId:
+                  type: string
+                  description: The ID of the request sub-category type (e.g., vacation,
+                    sick absence).
+              required:
+              - employeeId
+              - startDate
+              - endDate
+              - note
+              - categoryId
+      responses:
+        201:
+          description: Absence request created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  requestId:
+                    type: string
+                    description: The ID of the newly created absence request.
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+    patch:
+      tags:
+      - Absences
+      summary: Bulk update absence requests
+      description: Updates multiple absence requests at once.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/BulkVacationUpdateDTO'
+      responses:
+        200:
+          description: Bulk update successful.
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+  /api/v1/workspace/session:
+    get:
+      tags:
+      - Workspace
+      summary: Retrieve current workspace session
+      description: Fetches details of a workspace session.
+      responses:
+        200:
+          description: Workspace sessions retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceSessionDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+  /api/v1/employees:
+    get:
+      tags:
+      - Employees
       summary: List all employees
       description: Retrieves a list of all employees accounts.
       parameters:
-        - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pageSize"
-        - $ref: "#/components/parameters/search"
-        - $ref: "#/components/parameters/sort"
-        - $ref: "#/components/parameters/filters"
-        - in: query
-          name: hasProfile
-          schema:
-            type: boolean
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/search'
+      - $ref: '#/components/parameters/sort'
+      - $ref: '#/components/parameters/filter'
+      - in: query
+        name: hasProfile
+        schema:
+          type: boolean
       responses:
         200:
           description: A list of employees
@@ -711,24 +1341,24 @@ paths:
                 type: object
                 properties:
                   pagination:
-                    $ref: "#/components/schemas/Pagination"
+                    $ref: '#/components/schemas/Pagination'
                   items:
                     type: array
                     items:
-                      $ref: "#/components/schemas/EmployeeDTO"
+                      $ref: '#/components/schemas/EmployeeDTO'
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
+          $ref: '#/components/responses/404'
     post:
       tags:
-        - Employees
-      summary: "Create a new employee"
-      description: "Creates a new employee with the provided details."
+      - Employees
+      summary: Create a new employee
+      description: Creates a new employee with the provided details.
       requestBody:
         required: true
         content:
@@ -736,9 +1366,9 @@ paths:
             schema:
               type: object
               required:
-                - firstName
-                - lastName
-                - isFullAccessUser
+              - firstName
+              - lastName
+              - isFullAccessUser
               properties:
                 email:
                   type: string
@@ -764,24 +1394,23 @@ paths:
                   id:
                     type: string
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
+          $ref: '#/components/responses/404'
         409:
           description: User already exists.
-
-  /api/employees/{id}:
+  /api/v1/employees/{id}:
     get:
       tags:
-        - Employees
+      - Employees
       summary: Retrieve a user by Employee ID
       description: Fetches details of a user by their Employee ID.
       parameters:
-        - $ref: "#/components/parameters/pathId"
+      - $ref: '#/components/parameters/pathId'
       responses:
         200:
           description: Employee details retrieved successfully.
@@ -791,26 +1420,25 @@ paths:
                 type: object
                 properties:
                   employeeGeneral:
-                    $ref: "#/components/schemas/EmployeeDTO"
-                  employeeGoModuleDetails:
-                    $ref: "#/components/schemas/EmployeeGOModuleDetailsDTO"
+                    $ref: '#/components/schemas/EmployeeDTO'
+                  employeeAbsenceModuleDetails:
+                    $ref: '#/components/schemas/EmployeeAbsenceBalanceDTO'
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
-  /api/employees/settings/{id}:
+          $ref: '#/components/responses/404'
+  /api/v1/employees/settings/{id}:
     get:
       tags:
-        - Employees
+      - Employees
       summary: Retrieve employee's settings by Employee ID
       description: Fetches details of a user by their Employee ID.
       parameters:
-        - $ref: "#/components/parameters/pathId"
+      - $ref: '#/components/parameters/pathId'
       responses:
         200:
           description: Employee details retrieved successfully.
@@ -820,25 +1448,24 @@ paths:
                 type: object
                 properties:
                   employeeGeneral:
-                    $ref: "#/components/schemas/EmployeeDTO"
-                  employeeGoModuleDetails:
-                    $ref: "#/components/schemas/EmployeeGOModuleDetailsDTO"
+                    $ref: '#/components/schemas/EmployeeDTO'
+                  employeeAbsenceModuleDetails:
+                    $ref: '#/components/schemas/EmployeeAbsenceBalanceDTO'
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
+          $ref: '#/components/responses/404'
     put:
       tags:
-        - Employees
+      - Employees
       summary: Update an employees settings
       description: Updates an existing user with the provided details.
       parameters:
-        - $ref: "#/components/parameters/pathId"
+      - $ref: '#/components/parameters/pathId'
       requestBody:
         required: true
         content:
@@ -848,119 +1475,182 @@ paths:
               properties:
                 firstName:
                   type: string
-                  description: "The user's first name (optional)."
+                  description: The user's first name (optional).
                 lastName:
                   type: string
-                  description: "The user's last name (optional)."
+                  description: The user's last name (optional).
                 jobTitle:
                   type: string
-                  description: "The user's job title (optional)."
+                  description: The user's job title (optional).
                 departmentId:
                   type: string
-                  description: "The user's team (optional)."
+                  description: The user's team (optional).
                 image:
                   type: string
-                  description: "Optional base64 encoded image of the user."
+                  description: Optional base64 encoded image of the user.
                 supervisorEmployeeIds:
                   type: array
                   items:
                     type: string
-                  description: "List of supervisor Firebase UIDs to update (optional)."
+                  description: List of supervisor Firebase UIDs to update (optional).
                 representativeEmployeeIds:
                   type: array
                   items:
                     type: string
-                  description: "List of representative Firebase UIDs to update (optional)."
+                  description: List of representative Firebase UIDs to update (optional).
+                superviseeEmployeeIds:
+                  type: array
+                  items:
+                    type: string
+                  description: List of supervisee Firebase UIDs to update (optional).
                 requestCategories:
                   type: array
-                  description: "List of request categories to update (optional)."
+                  description: List of request categories to update (optional).
                   items:
-                    $ref: "#/components/schemas/RequestCategoryDTO"
+                    $ref: '#/components/schemas/AbsenceCategoryDTO'
+                holidaysRegion:
+                  type: string
+                  description: Holidays region ID (optional).
+                employmentDate:
+                  type: string
+                  format: date
+                  description: Employment start date (optional).
+                workingState:
+                  type: string
+                  description: Working state of the employee.
+                fte:
+                  type: number
+                  format: double
+                  description: Full Time Equivalent (0.0 - 1.0).
       responses:
         200:
           description: Employee updated successfully.
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
+          $ref: '#/components/responses/404'
     delete:
       tags:
-        - Employees
+      - Employees
       summary: Delete an employee
       description: Deletes an existing user with the provided employee ID.
       parameters:
-        - $ref: "#/components/parameters/pathId"
+      - $ref: '#/components/parameters/pathId'
       responses:
         200:
           description: Employee deleted successfully.
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
-  /api/employees/details/{id}:
+          $ref: '#/components/responses/404'
+  /api/v1/employees/{id}/versions:
     get:
       tags:
-        - Employees
+      - Employees
+      summary: Get employee versions
+      description: Returns a list of available history versions.
+      parameters:
+      - $ref: '#/components/parameters/pathId'
+      responses:
+        200:
+          description: Versions retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmployeeDataVersionDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+    post:
+      tags:
+      - Employees
+      summary: Create a new version
+      description: Creates a new snapshot version of the employee data.
+      parameters:
+      - $ref: '#/components/parameters/pathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiEmployeesIdVersionsPostRequest'
+      responses:
+        201:
+          description: Version created successfully.
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+  /api/v1/employees/details/{id}:
+    get:
+      tags:
+      - Employees
       summary: Retrieve employee details by Employee ID
       description: Fetches detailed information of an employee by their Employee ID.
       parameters:
-        - $ref: "#/components/parameters/pathId"
+      - $ref: '#/components/parameters/pathId'
+      - name: versionId
+        in: query
+        schema:
+          type: integer
+        description: Optional version ID to retrieve a snapshot
       responses:
         200:
           description: Employee details retrieved successfully.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EmployeeDetailsDTO"
+                $ref: '#/components/schemas/EmployeeDetailsDTO'
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
+          $ref: '#/components/responses/404'
     put:
       tags:
-        - Employees
+      - Employees
       summary: Update employee details
       description: Updates an existing employee with the provided details.
       parameters:
-        - $ref: "#/components/parameters/pathId"
+      - $ref: '#/components/parameters/pathId'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EmployeeDetailsDTO"
+              $ref: '#/components/schemas/EmployeeDetailsDTO'
       responses:
         200:
           description: Employee details updated successfully.
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
-  /api/employees/filters:
+          $ref: '#/components/responses/404'
+  /api/v1/employees/filters:
     get:
       tags:
-        - Employees
+      - Employees
       summary: Retrieve available filters for employees
-      description: Returns a list of available filters, including their names, types, and options based on the filter type.
+      description: Returns a list of available filters, including their names, types,
+        and options based on the filter type.
       responses:
         200:
           description: Filters retrieved successfully.
@@ -969,27 +1659,26 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/FilterDTO"
+                  $ref: '#/components/schemas/FilterDTO'
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
-  /api/employees/{id}/files:
+          $ref: '#/components/responses/404'
+  /api/v1/employees/{id}/files:
     get:
       tags:
-        - Employees
+      - Employees
       summary: Get all files for an employee
       description: Retrieves a list of all files uploaded for a specific employee.
       parameters:
-        - $ref: "#/components/parameters/pathId"
-        - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pageSize"
-        - $ref: "#/components/parameters/search"
+      - $ref: '#/components/parameters/pathId'
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/search'
       responses:
         200:
           description: Files retrieved successfully.
@@ -999,28 +1688,27 @@ paths:
                 type: object
                 properties:
                   pagination:
-                    $ref: "#/components/schemas/Pagination"
+                    $ref: '#/components/schemas/Pagination'
                   items:
                     type: array
                     items:
-                      $ref: "#/components/schemas/EmployeeFileDTO"
+                      $ref: '#/components/schemas/EmployeeFileDTO'
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
-  /api/employees/{id}/files/presigned:
+          $ref: '#/components/responses/404'
+  /api/v1/uploads:
     post:
       tags:
-        - Employees
+      - Employees
       summary: Get presigned URL for file upload
       description: Returns a presigned POST URL and fields for direct S3 upload.
       parameters:
-        - $ref: "#/components/parameters/pathId"
+      - $ref: '#/components/parameters/pathId'
       requestBody:
         required: true
         content:
@@ -1028,9 +1716,9 @@ paths:
             schema:
               type: object
               required:
-                - fileName
-                - mimeType
-                - fileSize
+              - fileName
+              - mimeType
+              - fileSize
               properties:
                 fileName:
                   type: string
@@ -1047,66 +1735,129 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PresignedUploadDTO"
+                $ref: '#/components/schemas/PresignedUploadDTO'
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
-  /api/employees/{id}/files/{fileId}:
+          $ref: '#/components/responses/404'
+  /api/v1/employees/{id}/files/{fileId}:
     delete:
       tags:
-        - Employees
+      - Employees
       summary: Delete an employee file
       description: Deletes a specific file for an employee.
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-          description: The employee ID.
-        - name: fileId
-          in: path
-          required: true
-          schema:
-            type: string
-          description: The file ID to delete.
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The employee ID.
+      - name: fileId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The file ID to delete.
       responses:
         200:
           description: File deleted successfully.
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
-  /api/employees/{id}/files/{fileId}/download:
+          $ref: '#/components/responses/404'
+  /api/v1/absences/settings/employees/{id}:
+    put:
+      tags:
+      - Absences
+      summary: Update Employee Relationships
+      description: Manage supervisors, representees, and supervisees for an employee.
+      parameters:
+      - $ref: '#/components/parameters/pathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeSettingsDTO'
+      responses:
+        200:
+          description: Relationships updated successfully.
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+  /api/v1/absences/settings/categories:
     get:
       tags:
-        - Employees
+      - Absences
+      summary: Get request categories configuration
+      description: Retrieves the list of request categories with their configuration.
+      responses:
+        200:
+          description: List of request categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RequestCategoryConfigDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+    post:
+      tags:
+      - Absences
+      summary: Batch Update Request Categories
+      description: Create or update request categories, subcategories, and yearly
+        limits.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RequestCategoryConfigDTO'
+      responses:
+        200:
+          description: Configuration updated successfully.
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+  /api/v1/employees/{id}/files/{fileId}/download:
+    get:
+      tags:
+      - Employees
       summary: Get presigned URL for file download
       description: Returns a temporary presigned S3 URL for downloading the file.
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-          description: The employee ID.
-        - name: fileId
-          in: path
-          required: true
-          schema:
-            type: string
-          description: The file ID to download.
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The employee ID.
+      - name: fileId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The file ID to download.
       responses:
         200:
           description: Presigned URL generated successfully.
@@ -1119,18 +1870,17 @@ paths:
                     type: string
                     description: Temporary S3 presigned URL for downloading the file
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
-  /api/profile:
+          $ref: '#/components/responses/404'
+  /api/v1/profile:
     get:
       tags:
-        - Profiles
+      - Profiles
       summary: Get Profile Information
       description: Retrieves profile information for the current user.
       responses:
@@ -1139,16 +1889,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ProfileDTO"
+                $ref: '#/components/schemas/ProfileDTO'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
+          $ref: '#/components/responses/404'
     put:
       tags:
-        - Profiles
+      - Profiles
       summary: Update current profile
       description: Updates an existing user with the provided details.
       operationId: updateProfileNotifications
@@ -1169,7 +1919,8 @@ paths:
                   type: string
                 avatarBase64:
                   type: string
-                  description: Optional base64 encoded image of the user's profile photo.
+                  description: Optional base64 encoded image of the user's profile
+                    photo.
                 notificationsIds:
                   type: array
                   items:
@@ -1179,158 +1930,21 @@ paths:
         200:
           description: Profile updated successfully.
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-  /api/requests:
-    get:
-      summary: List all requests
-      description: Retrieves a list of all leave requests based on query parameters.
-      tags:
-        - Requests
-      parameters:
-        - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pageSize"
-        - in: query
-          name: employeeId
-          schema:
-            type: string
-        - in: query
-          name: startDate
-          schema:
-            type: string
-            format: date
-        - in: query
-          name: endDate
-          schema:
-            type: string
-            format: date
-        - in: query
-          name: createdAt
-          schema:
-            type: string
-            format: date-time
-        - in: query
-          name: changedAt
-          schema:
-            type: string
-            format: date-time
-        - in: query
-          name: requestStatus
-          schema:
-            type: string
-        - in: query
-          name: includeRepresentees
-          schema:
-            type: boolean
-        - in: query
-          name: includeRepresentatives
-          schema:
-            type: boolean
-        - in: query
-          name: includeSupervisees
-          schema:
-            type: boolean
-        - in: query
-          name: includeSupervisors
-          schema:
-            type: boolean
-        - in: query
-          name: includeCurrentEmployee
-          schema:
-            type: boolean
-      responses:
-        200:
-          description: A list of requests
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  pagination:
-                    $ref: "#/components/schemas/Pagination"
-                  items:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/RequestDTO"
-        400:
-          $ref: "#/components/responses/400"
-        401:
-          $ref: "#/components/responses/401"
-        403:
-          $ref: "#/components/responses/403"
-        404:
-          $ref: "#/components/responses/404"
-    post:
-      tags:
-        - Requests
-      summary: Create a new leave request
-      description: Allows users to create a new leave request with details such as start and end dates, the number of days off, a note, and the type of request.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                employeeId:
-                  type: string
-                  description: The ID of the employee creating the request.
-                startDate:
-                  type: string
-                  format: date
-                  description: Start date of the leave in YYYY-MM-DD format.
-                endDate:
-                  type: string
-                  format: date
-                  description: End date of the leave in YYYY-MM-DD format.
-                note:
-                  type: string
-                  description: Additional notes regarding the leave request.
-                categoryId:
-                  type: string
-                  description: The ID of the request category type (e.g., vacation, sick leave).
-                subCategoryId:
-                  type: string
-                  description: The ID of the request sub-category type (e.g., vacation, sick leave).
-              required:
-                - employeeId
-                - startDate
-                - endDate
-                - note
-                - categoryId
-      responses:
-        201:
-          description: Leave request created successfully.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  requestId:
-                    type: string
-                    description: "The ID of the newly created leave request."
-        400:
-          $ref: "#/components/responses/400"
-        401:
-          $ref: "#/components/responses/401"
-        403:
-          $ref: "#/components/responses/403"
-        404:
-          $ref: "#/components/responses/404"
-
-  /api/requests/{id}:
+          $ref: '#/components/responses/404'
+  /api/v1/absences/{id}:
     get:
       tags:
-        - Requests
-      summary: Get a specific request
-      description: Retrieves a specific leave request by its ID.
+      - Absences
+      summary: Get a specific absence request
+      description: Retrieves a specific absence request by its ID.
       parameters:
-        - $ref: "#/components/parameters/pathId"
+      - $ref: '#/components/parameters/pathId'
       responses:
         200:
           description: Detailed request information.
@@ -1339,26 +1953,26 @@ paths:
               schema:
                 properties:
                   request:
-                    $ref: "#/components/schemas/RequestDTO"
+                    $ref: '#/components/schemas/AbsenceRequestDTO'
                   requestHistory:
                     type: array
                     items:
-                      $ref: "#/components/schemas/RequestStatusDetailsDTO"
+                      $ref: '#/components/schemas/RequestStatusHistoryDTO'
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
+          $ref: '#/components/responses/404'
     put:
       tags:
-        - Requests
-      summary: Update a specific request
-      description: Allows users to update a specific leave request.
+      - Absences
+      summary: Update a specific absence request
+      description: Allows users to update a specific absence request.
       parameters:
-        - $ref: "#/components/parameters/pathId"
+      - $ref: '#/components/parameters/pathId'
       requestBody:
         required: true
         content:
@@ -1367,8 +1981,7 @@ paths:
               type: object
               properties:
                 status:
-                  type: string
-                  enum: [Pending, Approved, Rejected, Canceled]
+                  $ref: '#/components/schemas/AbsenceRequestStatusEnum'
                   description: The new status of the request
                 note:
                   type: string
@@ -1377,24 +1990,23 @@ paths:
         200:
           description: Status updated successfully.
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
-  /api/requests/employees:
+          $ref: '#/components/responses/404'
+  /api/v1/absences/employees:
     get:
       tags:
-        - Requests
-      summary: List all employees in GO module
+      - Absences
+      summary: List all employees in Absence module
       description: Retrieves a list of all employees accounts.
       parameters:
-        - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pageSize"
-        - $ref: "#/components/parameters/search"
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/search'
       responses:
         200:
           description: A list of employees
@@ -1404,28 +2016,27 @@ paths:
                 type: object
                 properties:
                   pagination:
-                    $ref: "#/components/schemas/Pagination"
+                    $ref: '#/components/schemas/Pagination'
                   items:
                     type: array
                     items:
-                      $ref: "#/components/schemas/EmployeeDTO"
+                      $ref: '#/components/schemas/EmployeeDTO'
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
-  /api/requests/employees/{id}:
+          $ref: '#/components/responses/404'
+  /api/v1/absences/employees/{id}:
     get:
       tags:
-        - Requests
-      summary: Retrieve a employees GO module data
-      description: Fetches employees GO module data by their Employee ID.
+      - Absences
+      summary: Retrieve a employees Absence module data
+      description: Fetches employees Absence module data by their Employee ID.
       parameters:
-        - $ref: "#/components/parameters/pathId"
+      - $ref: '#/components/parameters/pathId'
       responses:
         200:
           description: Employee details retrieved successfully.
@@ -1435,26 +2046,25 @@ paths:
                 type: object
                 properties:
                   employeeGeneral:
-                    $ref: "#/components/schemas/EmployeeDTO"
-                  employeeGoModuleDetails:
-                    $ref: "#/components/schemas/EmployeeGOModuleDetailsDTO"
+                    $ref: '#/components/schemas/EmployeeDTO'
+                  employeeAbsenceModuleDetails:
+                    $ref: '#/components/schemas/EmployeeAbsenceBalanceDTO'
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
-  /api/requests/special-dates:
+          $ref: '#/components/responses/404'
+  /api/v1/absences/special-dates:
     get:
       tags:
-        - Requests
+      - Absences
       summary: Retrieve special dates for specified years
       description: Fetches special dates for the given array of years.
       parameters:
-        - $ref: "#/components/parameters/years"
+      - $ref: '#/components/parameters/years'
       responses:
         200:
           description: Special dates retrieved successfully.
@@ -1466,30 +2076,189 @@ paths:
                   specialDates:
                     type: array
                     items:
-                      $ref: "#/components/schemas/SpecialDateDTO"
+                      $ref: '#/components/schemas/AbsenceSpecialDateDTO'
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
-  /api/requests/date-ranges:
+          $ref: '#/components/responses/404'
+    post:
+      tags:
+      - Absences
+      summary: Create a new special date
+      description: Creates a new special date.
+      requestBody:
+        description: Special date object that needs to be added
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AbsenceSpecialDateDTO'
+      responses:
+        200:
+          description: Special date created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AbsenceSpecialDateDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+    put:
+      tags:
+      - Absences
+      summary: Update a special date
+      description: Updates an existing special date.
+      requestBody:
+        description: Special date object that needs to be updated
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AbsenceSpecialDateDTO'
+      responses:
+        200:
+          description: Special date updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AbsenceSpecialDateDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+  /api/v1/absences/special-dates/{id}:
+    delete:
+      tags:
+      - Absences
+      summary: Delete a special date
+      description: Deletes an existing special date.
+      parameters:
+      - name: id
+        in: path
+        description: ID of the special date to delete
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Special date deleted successfully.
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        404:
+          $ref: '#/components/responses/404'
+  /api/v1/absences/categories:
     get:
       tags:
-        - Requests Date Ranges
+      - Absences
+      summary: List all request categories
+      description: Retrieves a list of all request categories.
+      responses:
+        200:
+          description: List of request categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AbsenceCategorySettingsDTO'
+        401:
+          $ref: '#/components/responses/401'
+    post:
+      tags:
+      - Absences
+      summary: Create a new request category
+      description: Creates a new request category.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AbsenceCategorySettingsDTO'
+      responses:
+        201:
+          description: Request category created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AbsenceCategorySettingsDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+  /api/v1/absences/categories/{id}:
+    put:
+      tags:
+      - Absences
+      summary: Update a request category
+      description: Updates an existing request category.
+      parameters:
+      - name: id
+        in: path
+        description: ID of the request category to update
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AbsenceCategorySettingsDTO'
+      responses:
+        200:
+          description: Request category updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AbsenceCategorySettingsDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        404:
+          $ref: '#/components/responses/404'
+    delete:
+      tags:
+      - Absences
+      summary: Delete a request category
+      description: Deletes an existing request category.
+      parameters:
+      - name: id
+        in: path
+        description: ID of the request category to delete
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Request category deleted successfully
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        404:
+          $ref: '#/components/responses/404'
+  /api/v1/absences/date-ranges:
+    get:
+      tags:
+      - Absences
       summary: Retrieve date range elements for employees
       description: Fetches a list of date range elements for all employees.
       parameters:
-        - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pageSize"
-        - $ref: "#/components/parameters/search"
-        - $ref: "#/components/parameters/requestStatuses"
-        - $ref: "#/components/parameters/years"
-        - $ref: "#/components/parameters/filters"
-        - $ref: "#/components/parameters/sort"
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/search'
+      - $ref: '#/components/parameters/requestStatuses'
+      - $ref: '#/components/parameters/years'
+      - $ref: '#/components/parameters/filter'
+      - $ref: '#/components/parameters/sort'
       responses:
         200:
           description: Gantt date range elements retrieved successfully.
@@ -1500,33 +2269,32 @@ paths:
                 items:
                   properties:
                     employee:
-                      $ref: "#/components/schemas/EmployeeDTO"
+                      $ref: '#/components/schemas/EmployeeDTO'
                     dateRanges:
                       type: array
                       items:
-                        $ref: "#/components/schemas/RequestDateRangeDTO"
+                        $ref: '#/components/schemas/AbsenceRequestDateRangeDTO'
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
-  /api/requests/date-ranges/employees/{id}:
+          $ref: '#/components/responses/404'
+  /api/v1/absences/date-ranges/employees/{id}:
     get:
       tags:
-        - Requests Date Ranges
+      - Absences
       summary: Retrieve date range elements for specific employee
       description: Fetches a list of date range elements for specific employee.
       parameters:
-        - $ref: "#/components/parameters/pathId"
-        - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pageSize"
-        - $ref: "#/components/parameters/search"
-        - $ref: "#/components/parameters/requestStatuses"
-        - $ref: "#/components/parameters/years"
+      - $ref: '#/components/parameters/pathId'
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/search'
+      - $ref: '#/components/parameters/requestStatuses'
+      - $ref: '#/components/parameters/years'
       responses:
         200:
           description: Date range elements retrieved successfully.
@@ -1538,62 +2306,72 @@ paths:
                   dateRanges:
                     type: array
                     items:
-                      $ref: "#/components/schemas/RequestDateRangeDTO"
+                      $ref: '#/components/schemas/AbsenceRequestDateRangeDTO'
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
-  /api/organisation/settings:
+          $ref: '#/components/responses/404'
+  /api/v1/employees/settings/teams:
     get:
       tags:
-        - Organisation
-      summary: Retrieve organisation settings
-      description: Fetches organisation settings.
+      - Employees
+      summary: Retrieve teams/departments
+      description: Fetches all teams (departments) for employee organization.
       responses:
         200:
-          description: Organisation settings retrieved successfully.
+          description: Teams retrieved successfully.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  umModule:
-                    type: object
-                    properties:
-                      departments:
-                        type: array
-                        items:
-                          $ref: "#/components/schemas/DepartmentDTO"
-                  goModule:
-                    type: object
-                    properties:
-                      organisationRequestCategories:
-                        type: array
-                        items:
-                          $ref: "#/components/schemas/OrganisationRequestCategoryDTO"
-                      specialDates:
-                        type: array
-                        items:
-                          $ref: "#/components/schemas/SpecialDateDTO"
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DepartmentDTO'
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
+          $ref: '#/components/responses/404'
+    post:
+      tags:
+      - Employees
+      summary: Create a new team
+      description: Creates a new team (department) for employee organization.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepartmentDTO'
+      responses:
+        201:
+          description: Team created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepartmentDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
     put:
       tags:
-        - Organisation
-      summary: Update organisation settings
-      description: Updates organisation settings with the provided details.
+      - Employees
+      summary: Update teams
+      description: Updates teams (departments) configuration.
       requestBody:
         required: true
         content:
@@ -1601,40 +2379,25 @@ paths:
             schema:
               type: object
               properties:
-                umModule:
-                  type: object
-                  properties:
-                    departments:
-                      type: array
-                      items:
-                        $ref: "#/components/schemas/DepartmentDTO"
-                goModule:
-                  type: object
-                  properties:
-                    organisationRequestCategories:
-                      type: array
-                      items:
-                        $ref: "#/components/schemas/OrganisationRequestCategoryDTO"
-                    specialDates:
-                      type: array
-                      items:
-                        $ref: "#/components/schemas/SpecialDateDTO"
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/DepartmentDTO'
       responses:
         200:
-          description: Organisation settings updated successfully.
+          description: Teams updated successfully.
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
-  /api/alarms/settings:
+          $ref: '#/components/responses/404'
+  /api/v1/employees/alarms/settings:
     get:
       tags:
-        - Alarms
+      - Employees
       summary: Retrieve alarm settings
       description: Fetches alarm settings.
       responses:
@@ -1645,19 +2408,18 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/AlarmConfigDTO"
+                  $ref: '#/components/schemas/AlarmConfigDTO'
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
+          $ref: '#/components/responses/404'
     post:
       tags:
-        - Alarms
+      - Employees
       summary: Create a new alarm
       description: Creates a new alarm with the provided details.
       requestBody:
@@ -1667,7 +2429,7 @@ paths:
             schema:
               type: array
               items:
-                $ref: "#/components/schemas/AlarmConfigDTO"
+                $ref: '#/components/schemas/AlarmConfigDTO'
       responses:
         201:
           description: Alarm created successfully.
@@ -1679,31 +2441,32 @@ paths:
                   alarmId:
                     type: string
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
-  /api/alarms/notifications:
+          $ref: '#/components/responses/404'
+  /api/v1/employees/alarms/notifications:
     get:
       tags:
-        - Alarms
+      - Employees
       summary: Retrieve alarm notifications
       description: Fetches alarm notifications. Can be filtered by employee ID.
       parameters:
-        - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pageSize"
-        - in: query
-          name: employeeIds
-          description: Array of employee IDs to filter notifications by. Can be passed as repeated query params (?employeeIds=1&employeeIds=2) or a comma-separated list (?employeeIds=1,2).
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - in: query
+        name: employeeIds
+        description: Array of employee IDs to filter notifications by. Can be passed
+          as repeated query params (?employeeIds=1&employeeIds=2) or a comma-separated
+          list (?employeeIds=1,2).
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
       responses:
         200:
           description: Alarm notifications retrieved successfully.
@@ -1713,41 +2476,41 @@ paths:
                 type: object
                 properties:
                   pagination:
-                    $ref: "#/components/schemas/Pagination"
+                    $ref: '#/components/schemas/Pagination'
                   items:
                     type: array
                     items:
-                      $ref: "#/components/schemas/AlarmNotificationDTO"
+                      $ref: '#/components/schemas/AlarmNotificationDTO'
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
-  /api/export/organisation-work-schedule:
+          $ref: '#/components/responses/404'
+  /api/v1/absences/export/work-schedule:
     get:
       tags:
-        - Export
+      - Export
       summary: Export organisation work schedule to file
-      description: Downloads an Excel file containing the working days data for the all employees.
+      description: Downloads an Excel file containing the working days data for the
+        all employees.
       parameters:
-        - in: query
-          name: month
-          schema:
-            type: integer
-        - in: query
-          name: year
-          schema:
-            type: integer
-        - in: query
-          name: file_format
-          schema:
-            type: string
-        - $ref: "#/components/parameters/sort"
-        - $ref: "#/components/parameters/filters"
+      - in: query
+        name: month
+        schema:
+          type: integer
+      - in: query
+        name: year
+        schema:
+          type: integer
+      - in: query
+        name: fileFormat
+        schema:
+          type: string
+      - $ref: '#/components/parameters/sort'
+      - $ref: '#/components/parameters/filter'
       responses:
         200:
           description: Excel file containing the days off data.
@@ -1758,38 +2521,38 @@ paths:
                 properties:
                   filename:
                     type: string
-                  file_content:
+                  fileContent:
                     type: string
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
-  /api/export/organisation-employees-go-data:
+          $ref: '#/components/responses/404'
+  /api/v1/absences/export/employees-data:
     get:
       tags:
-        - Export
+      - Export
       summary: Export organisation employee go data to file
-      description: Downloads an Excel file containing the employee go data for the all employees.
+      description: Downloads an Excel file containing the employee go data for the
+        all employees.
       parameters:
-        - in: query
-          name: month
-          schema:
-            type: integer
-        - in: query
-          name: year
-          schema:
-            type: integer
-        - in: query
-          name: file_format
-          schema:
-            type: string
-        - $ref: "#/components/parameters/sort"
-        - $ref: "#/components/parameters/filters"
+      - in: query
+        name: month
+        schema:
+          type: integer
+      - in: query
+        name: year
+        schema:
+          type: integer
+      - in: query
+        name: fileFormat
+        schema:
+          type: string
+      - $ref: '#/components/parameters/sort'
+      - $ref: '#/components/parameters/filter'
       responses:
         200:
           description: Excel file containing the days off data.
@@ -1800,42 +2563,42 @@ paths:
                 properties:
                   filename:
                     type: string
-                  file_content:
+                  fileContent:
                     type: string
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
-  /api/export/organisation-go-requests:
+          $ref: '#/components/responses/404'
+  /api/v1/absences/export/requests:
     get:
       tags:
-        - Export
+      - Export
       summary: Export organisation absence requests to file
-      description: Downloads an Excel file containing the days off data for the all employees.
+      description: Downloads an Excel file containing the days off data for the all
+        employees.
       parameters:
-        - in: query
-          name: status
-          schema:
-            type: array
-            items:
-              type: string
-        - in: query
-          name: month
-          schema:
-            type: integer
-        - in: query
-          name: year
-          schema:
-            type: integer
-        - in: query
-          name: file_format
-          schema:
+      - in: query
+        name: status
+        schema:
+          type: array
+          items:
             type: string
+      - in: query
+        name: month
+        schema:
+          type: integer
+      - in: query
+        name: year
+        schema:
+          type: integer
+      - in: query
+        name: fileFormat
+        schema:
+          type: string
       responses:
         200:
           description: Excel file containing the days off data.
@@ -1846,29 +2609,29 @@ paths:
                 properties:
                   filename:
                     type: string
-                  file_content:
+                  fileContent:
                     type: string
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
-  /api/export/organisation-go-requests/{id}:
+          $ref: '#/components/responses/404'
+  /api/v1/absences/export/requests/{id}:
     get:
       tags:
-        - Export
+      - Absences
       summary: Export organisation absence requests to file
-      description: Downloads an Excel file containing the days off data for the all employees.
+      description: Downloads an Excel file containing the days off data for the all
+        employees.
       parameters:
-        - $ref: "#/components/parameters/pathId"
-        - in: query
-          name: file_format
-          schema:
-            type: string
+      - $ref: '#/components/parameters/pathId'
+      - in: query
+        name: fileFormat
+        schema:
+          type: string
       responses:
         200:
           description: Excel file containing the days off data.
@@ -1879,30 +2642,29 @@ paths:
                 properties:
                   filename:
                     type: string
-                  file_content:
+                  fileContent:
                     type: string
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
-  /api/export/employee-data:
+          $ref: '#/components/responses/404'
+  /api/v1/employees/export/data:
     get:
       tags:
-        - Export
+      - Employees
       summary: Export all employee data to file
       description: Downloads an Excel file containing the employee data.
       parameters:
-        - in: query
-          name: file_format
-          schema:
-            type: string
-        - $ref: "#/components/parameters/sort"
-        - $ref: "#/components/parameters/filters"
+      - in: query
+        name: fileFormat
+        schema:
+          type: string
+      - $ref: '#/components/parameters/sort'
+      - $ref: '#/components/parameters/filter'
       responses:
         200:
           description: Excel file containing the employee data.
@@ -1913,29 +2675,28 @@ paths:
                 properties:
                   filename:
                     type: string
-                  file_content:
+                  fileContent:
                     type: string
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
-
-  /api/export/employee-data/{id}:
+          $ref: '#/components/responses/404'
+  /api/v1/employees/{id}/export/data:
     get:
       tags:
-        - Export
+      - Employees
       summary: Export employee data to file
       description: Downloads an Excel file containing the employee data.
       parameters:
-        - $ref: "#/components/parameters/pathId"
-        - in: query
-          name: file_format
-          schema:
-            type: string
+      - $ref: '#/components/parameters/pathId'
+      - in: query
+        name: fileFormat
+        schema:
+          type: string
       responses:
         200:
           description: Excel file containing the employee data.
@@ -1946,13 +2707,13 @@ paths:
                 properties:
                   filename:
                     type: string
-                  file_content:
+                  fileContent:
                     type: string
         400:
-          $ref: "#/components/responses/400"
+          $ref: '#/components/responses/400'
         401:
-          $ref: "#/components/responses/401"
+          $ref: '#/components/responses/401'
         403:
-          $ref: "#/components/responses/403"
+          $ref: '#/components/responses/403'
         404:
-          $ref: "#/components/responses/404"
+          $ref: '#/components/responses/404'
