@@ -846,6 +846,393 @@ components:
           - FAILED
         downloadUrl:
           type: string
+    TimesheetStatusEnum:
+      type: string
+      enum:
+      - Draft
+      - Submitted
+      - Approved
+      - Rejected
+      - RevisionRequested
+    TimeEntryTypeEnum:
+      type: string
+      enum:
+      - Regular
+      - Absence
+      - Holiday
+      - SickLeave
+      - Other
+    TimeEntryDTO:
+      type: object
+      description: Individual time entry for a specific date.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the time entry.
+        date:
+          type: string
+          format: date
+          description: The date this entry is for.
+        hoursWorked:
+          type: number
+          format: double
+          description: Regular hours worked (e.g., 8.0).
+        overtimeHours:
+          type: number
+          format: double
+          description: Overtime hours worked (e.g., 2.0).
+          default: 0
+        projectId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Optional project ID this time was logged against.
+        taskId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Optional task ID within the project.
+        note:
+          type: string
+          nullable: true
+          description: Optional note for this entry.
+        entryType:
+          $ref: '#/components/schemas/TimeEntryTypeEnum'
+        isAutoFilled:
+          type: boolean
+          description: True if this entry was auto-generated from absences/holidays.
+          default: false
+        absenceRequestId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Reference to absence request if entry type is Absence.
+        createdAt:
+          type: string
+          format: date-time
+        changedAt:
+          type: string
+          format: date-time
+      required:
+      - id
+      - date
+      - hoursWorked
+      - entryType
+    TimesheetDTO:
+      type: object
+      description: Weekly timesheet that goes through approval workflow.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the timesheet.
+        employee:
+          $ref: '#/components/schemas/EmployeeDTO'
+        weekStartDate:
+          type: string
+          format: date
+          description: Monday of the week (ISO week start).
+        weekEndDate:
+          type: string
+          format: date
+          description: Sunday of the week.
+        status:
+          $ref: '#/components/schemas/TimesheetStatusEnum'
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeEntryDTO'
+        totalRegularHours:
+          type: number
+          format: double
+          description: Sum of regular hours for the week.
+        totalOvertimeHours:
+          type: number
+          format: double
+          description: Sum of overtime hours for the week.
+        submittedAt:
+          type: string
+          format: date-time
+          nullable: true
+        submittedBy:
+          $ref: '#/components/schemas/EmployeeDTO'
+          nullable: true
+          description: Employee who submitted (for submit-on-behalf scenarios).
+        approvedAt:
+          type: string
+          format: date-time
+          nullable: true
+        approvedBy:
+          $ref: '#/components/schemas/EmployeeDTO'
+          nullable: true
+        rejectionNote:
+          type: string
+          nullable: true
+          description: Note explaining why the timesheet was rejected.
+        allowedActions:
+          type: array
+          items:
+            type: string
+          description: Actions the current user can perform (e.g., SUBMIT, APPROVE, EDIT).
+        createdAt:
+          type: string
+          format: date-time
+        changedAt:
+          type: string
+          format: date-time
+      required:
+      - id
+      - employee
+      - weekStartDate
+      - weekEndDate
+      - status
+      - entries
+      - totalRegularHours
+      - totalOvertimeHours
+    TimesheetSummaryDTO:
+      type: object
+      description: Lightweight timesheet for list views.
+      properties:
+        id:
+          type: string
+          format: uuid
+        employee:
+          $ref: '#/components/schemas/EmployeeDTO'
+        weekStartDate:
+          type: string
+          format: date
+        weekEndDate:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/TimesheetStatusEnum'
+        totalRegularHours:
+          type: number
+          format: double
+        totalOvertimeHours:
+          type: number
+          format: double
+        submittedAt:
+          type: string
+          format: date-time
+          nullable: true
+        allowedActions:
+          type: array
+          items:
+            type: string
+      required:
+      - id
+      - employee
+      - weekStartDate
+      - weekEndDate
+      - status
+      - totalRegularHours
+      - totalOvertimeHours
+    TimesheetStatusHistoryDTO:
+      type: object
+      description: Audit trail entry for timesheet status changes.
+      properties:
+        status:
+          $ref: '#/components/schemas/TimesheetStatusEnum'
+        changedAt:
+          type: string
+          format: date-time
+        changedBy:
+          $ref: '#/components/schemas/EmployeeDTO'
+        note:
+          type: string
+          nullable: true
+    TimeTrackingProjectDTO:
+      type: object
+      description: Project for time logging.
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          description: Project name.
+        description:
+          type: string
+          nullable: true
+        code:
+          type: string
+          description: Short project code (e.g., PROJ-001).
+        isActive:
+          type: boolean
+          default: true
+        hexColor:
+          type: string
+          description: Hex color for UI display (e.g., #FF5733).
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeTrackingTaskDTO'
+        createdAt:
+          type: string
+          format: date-time
+        changedAt:
+          type: string
+          format: date-time
+      required:
+      - id
+      - name
+      - code
+      - isActive
+    TimeTrackingTaskDTO:
+      type: object
+      description: Task within a project.
+      properties:
+        id:
+          type: string
+          format: uuid
+        projectId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+          default: true
+      required:
+      - id
+      - projectId
+      - name
+      - isActive
+    TimeTrackingSettingsDTO:
+      type: object
+      description: Organization-level time tracking configuration.
+      properties:
+        submissionDeadlineDayOfWeek:
+          type: integer
+          nullable: true
+          description: Day of week for submission deadline (1=Monday, 7=Sunday). Null means no deadline.
+          minimum: 1
+          maximum: 7
+        submissionDeadlineTime:
+          type: string
+          nullable: true
+          description: Time of day for deadline in HH:mm format.
+        autoFillFromAbsences:
+          type: boolean
+          description: Whether to auto-fill time entries from approved absences.
+          default: true
+        autoFillFromHolidays:
+          type: boolean
+          description: Whether to auto-fill time entries for public holidays.
+          default: true
+        defaultDailyHours:
+          type: number
+          format: double
+          description: Default expected working hours per day.
+          default: 8.0
+        overtimeThresholdDaily:
+          type: number
+          format: double
+          nullable: true
+          description: Hours per day after which overtime is counted. Null means no daily threshold.
+        overtimeThresholdWeekly:
+          type: number
+          format: double
+          nullable: true
+          description: Hours per week after which overtime is counted. Null means no weekly threshold.
+        allowFutureEntries:
+          type: boolean
+          description: Whether employees can log time for future dates.
+          default: false
+        requireProjectSelection:
+          type: boolean
+          description: Whether project selection is mandatory for time entries.
+          default: false
+    EmployeeTimeTrackingSettingsDTO:
+      type: object
+      description: Per-employee time tracking configuration.
+      properties:
+        employeeId:
+          type: string
+          format: uuid
+        supervisorEmployeeIds:
+          type: array
+          items:
+            type: string
+          description: IDs of employees who can approve this employee's timesheets.
+        superviseeEmployeeIds:
+          type: array
+          items:
+            type: string
+          description: IDs of employees whose timesheets this employee can approve.
+        defaultDailyHours:
+          type: number
+          format: double
+          nullable: true
+          description: Override for default daily hours (null uses org default).
+        defaultProjectId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Default project for this employee's time entries.
+    EmployeeTimeTrackingInfoDTO:
+      type: object
+      description: Employee with their time tracking module info.
+      properties:
+        employee:
+          $ref: '#/components/schemas/EmployeeDTO'
+        settings:
+          $ref: '#/components/schemas/EmployeeTimeTrackingSettingsDTO'
+        supervisors:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmployeeDTO'
+        supervisees:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmployeeDTO'
+    TimeTrackingReportSummaryDTO:
+      type: object
+      description: Summary report for time tracking data.
+      properties:
+        periodStart:
+          type: string
+          format: date
+        periodEnd:
+          type: string
+          format: date
+        totalRegularHours:
+          type: number
+          format: double
+        totalOvertimeHours:
+          type: number
+          format: double
+        byEmployee:
+          type: array
+          items:
+            type: object
+            properties:
+              employee:
+                $ref: '#/components/schemas/EmployeeDTO'
+              regularHours:
+                type: number
+                format: double
+              overtimeHours:
+                type: number
+                format: double
+        byProject:
+          type: array
+          items:
+            type: object
+            properties:
+              project:
+                $ref: '#/components/schemas/TimeTrackingProjectDTO'
+              regularHours:
+                type: number
+                format: double
+              overtimeHours:
+                type: number
+                format: double
   parameters:
     page:
       name: page
@@ -2717,3 +3104,1056 @@ paths:
           $ref: '#/components/responses/403'
         404:
           $ref: '#/components/responses/404'
+
+  /api/v1/timetracking/timesheets:
+    get:
+      tags:
+      - Timesheets
+      summary: List timesheets
+      description: Retrieves a list of timesheets with optional filters.
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/sort'
+      - $ref: '#/components/parameters/filter'
+      - name: employeeId
+        in: query
+        schema:
+          type: string
+        description: Filter by employee ID.
+      - name: status
+        in: query
+        schema:
+          type: array
+          items:
+            type: string
+        description: Filter by timesheet status.
+      - name: weekStartDate
+        in: query
+        schema:
+          type: string
+          format: date
+        description: Filter by week start date.
+      - name: fromDate
+        in: query
+        schema:
+          type: string
+          format: date
+        description: Filter timesheets from this date onwards.
+      - name: toDate
+        in: query
+        schema:
+          type: string
+          format: date
+        description: Filter timesheets up to this date.
+      - name: includeSupervisees
+        in: query
+        schema:
+          type: boolean
+        description: Include timesheets of employees current user supervises.
+      responses:
+        200:
+          description: List of timesheets.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimesheetSummaryDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+    post:
+      tags:
+      - Timesheets
+      summary: Create or get timesheet for a week
+      description: Creates a new timesheet for the specified week, or returns existing if already created. Can pre-fill entries.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                employeeId:
+                  type: string
+                  description: Employee ID (required for creating on behalf of others).
+                weekStartDate:
+                  type: string
+                  format: date
+                  description: Monday of the week to create timesheet for.
+                prefill:
+                  type: boolean
+                  default: true
+                  description: Whether to pre-fill entries from absences and holidays.
+              required:
+              - weekStartDate
+      responses:
+        200:
+          description: Existing timesheet returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimesheetDTO'
+        201:
+          description: New timesheet created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimesheetDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+  /api/v1/timetracking/timesheets/{id}:
+    get:
+      tags:
+      - Timesheets
+      summary: Get timesheet details
+      description: Retrieves a specific timesheet with all entries and status history.
+      parameters:
+      - $ref: '#/components/parameters/pathId'
+      responses:
+        200:
+          description: Timesheet details.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  timesheet:
+                    $ref: '#/components/schemas/TimesheetDTO'
+                  statusHistory:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimesheetStatusHistoryDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+    put:
+      tags:
+      - Timesheets
+      summary: Update timesheet entries
+      description: Updates time entries for a timesheet. Only allowed when status is Draft or RevisionRequested.
+      parameters:
+      - $ref: '#/components/parameters/pathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                entries:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        description: Entry ID (omit for new entries).
+                      date:
+                        type: string
+                        format: date
+                      hoursWorked:
+                        type: number
+                        format: double
+                      overtimeHours:
+                        type: number
+                        format: double
+                      projectId:
+                        type: string
+                        nullable: true
+                      taskId:
+                        type: string
+                        nullable: true
+                      note:
+                        type: string
+                        nullable: true
+                      entryType:
+                        $ref: '#/components/schemas/TimeEntryTypeEnum'
+              required:
+              - entries
+      responses:
+        200:
+          description: Timesheet updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimesheetDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+  /api/v1/timetracking/timesheets/{id}/submit:
+    post:
+      tags:
+      - Timesheets
+      summary: Submit timesheet for approval
+      description: Changes timesheet status from Draft to Submitted.
+      parameters:
+      - $ref: '#/components/parameters/pathId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                note:
+                  type: string
+                  description: Optional note for the approver.
+      responses:
+        200:
+          description: Timesheet submitted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimesheetDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+  /api/v1/timetracking/timesheets/{id}/approve:
+    post:
+      tags:
+      - Timesheets
+      summary: Approve timesheet
+      description: Approves a submitted timesheet.
+      parameters:
+      - $ref: '#/components/parameters/pathId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                note:
+                  type: string
+                  description: Optional approval note.
+      responses:
+        200:
+          description: Timesheet approved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimesheetDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+  /api/v1/timetracking/timesheets/{id}/reject:
+    post:
+      tags:
+      - Timesheets
+      summary: Reject timesheet
+      description: Rejects a submitted timesheet.
+      parameters:
+      - $ref: '#/components/parameters/pathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                note:
+                  type: string
+                  description: Reason for rejection.
+              required:
+              - note
+      responses:
+        200:
+          description: Timesheet rejected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimesheetDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+  /api/v1/timetracking/timesheets/{id}/request-revision:
+    post:
+      tags:
+      - Timesheets
+      summary: Request revision
+      description: Requests changes to a submitted timesheet without fully rejecting it.
+      parameters:
+      - $ref: '#/components/parameters/pathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                note:
+                  type: string
+                  description: Description of changes needed.
+              required:
+              - note
+      responses:
+        200:
+          description: Revision requested.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimesheetDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+  # ========================================
+  # Time Entries
+  # ========================================
+  /api/v1/timetracking/entries:
+    get:
+      tags:
+      - TimeEntries
+      summary: List time entries
+      description: Retrieves time entries with filters, useful for reports.
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/filter'
+      - name: employeeId
+        in: query
+        schema:
+          type: string
+      - name: projectId
+        in: query
+        schema:
+          type: string
+      - name: fromDate
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: toDate
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: entryType
+        in: query
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        200:
+          description: List of time entries.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimeEntryDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+  /api/v1/timetracking/entries/prefill:
+    post:
+      tags:
+      - TimeEntries
+      summary: Generate pre-filled entries
+      description: Generates time entries for a date range based on absences, holidays, and defaults.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                employeeId:
+                  type: string
+                  description: Employee to generate entries for.
+                startDate:
+                  type: string
+                  format: date
+                endDate:
+                  type: string
+                  format: date
+                includeAbsences:
+                  type: boolean
+                  default: true
+                includeHolidays:
+                  type: boolean
+                  default: true
+                defaultHours:
+                  type: number
+                  format: double
+                  description: Hours to fill for working days (uses settings default if not provided).
+              required:
+              - employeeId
+              - startDate
+              - endDate
+      responses:
+        200:
+          description: Pre-filled entries generated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  entries:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimeEntryDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+  # ========================================
+  # Projects & Tasks
+  # ========================================
+  /api/v1/timetracking/projects:
+    get:
+      tags:
+      - Projects
+      summary: List projects
+      description: Retrieves all time tracking projects.
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/search'
+      - name: isActive
+        in: query
+        schema:
+          type: boolean
+        description: Filter by active status.
+      responses:
+        200:
+          description: List of projects.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimeTrackingProjectDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+    post:
+      tags:
+      - Projects
+      summary: Create project
+      description: Creates a new time tracking project.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                code:
+                  type: string
+                hexColor:
+                  type: string
+                isActive:
+                  type: boolean
+                  default: true
+              required:
+              - name
+              - code
+      responses:
+        201:
+          description: Project created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeTrackingProjectDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+  /api/v1/timetracking/projects/{id}:
+    get:
+      tags:
+      - Projects
+      summary: Get project details
+      description: Retrieves a specific project with its tasks.
+      parameters:
+      - $ref: '#/components/parameters/pathId'
+      responses:
+        200:
+          description: Project details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeTrackingProjectDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        404:
+          $ref: '#/components/responses/404'
+    put:
+      tags:
+      - Projects
+      summary: Update project
+      description: Updates an existing project.
+      parameters:
+      - $ref: '#/components/parameters/pathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                code:
+                  type: string
+                hexColor:
+                  type: string
+                isActive:
+                  type: boolean
+      responses:
+        200:
+          description: Project updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeTrackingProjectDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+    delete:
+      tags:
+      - Projects
+      summary: Delete project
+      description: Deactivates a project (soft delete).
+      parameters:
+      - $ref: '#/components/parameters/pathId'
+      responses:
+        200:
+          description: Project deleted.
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+  /api/v1/timetracking/projects/{id}/tasks:
+    get:
+      tags:
+      - Projects
+      summary: List tasks for project
+      description: Retrieves all tasks for a specific project.
+      parameters:
+      - $ref: '#/components/parameters/pathId'
+      - name: isActive
+        in: query
+        schema:
+          type: boolean
+      responses:
+        200:
+          description: List of tasks.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimeTrackingTaskDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        404:
+          $ref: '#/components/responses/404'
+    post:
+      tags:
+      - Projects
+      summary: Create task
+      description: Creates a new task within a project.
+      parameters:
+      - $ref: '#/components/parameters/pathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                isActive:
+                  type: boolean
+                  default: true
+              required:
+              - name
+      responses:
+        201:
+          description: Task created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeTrackingTaskDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+  /api/v1/timetracking/tasks/{id}:
+    put:
+      tags:
+      - Projects
+      summary: Update task
+      description: Updates an existing task.
+      parameters:
+      - $ref: '#/components/parameters/pathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                isActive:
+                  type: boolean
+      responses:
+        200:
+          description: Task updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeTrackingTaskDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+    delete:
+      tags:
+      - Projects
+      summary: Delete task
+      description: Deactivates a task (soft delete).
+      parameters:
+      - $ref: '#/components/parameters/pathId'
+      responses:
+        200:
+          description: Task deleted.
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+  # ========================================
+  # Employee Settings (Hierarchy)
+  # ========================================
+  /api/v1/timetracking/employees:
+    get:
+      tags:
+      - EmployeeSettings
+      summary: List employees with TT settings
+      description: Retrieves employees with their time tracking module configuration.
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/search'
+      - $ref: '#/components/parameters/filter'
+      responses:
+        200:
+          description: List of employees with settings.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EmployeeTimeTrackingInfoDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+  /api/v1/timetracking/employees/{id}:
+    get:
+      tags:
+      - EmployeeSettings
+      summary: Get employee TT settings
+      description: Retrieves time tracking settings for a specific employee.
+      parameters:
+      - $ref: '#/components/parameters/pathId'
+      responses:
+        200:
+          description: Employee time tracking settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeTimeTrackingInfoDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+    put:
+      tags:
+      - EmployeeSettings
+      summary: Update employee TT settings
+      description: Updates time tracking settings for an employee (supervisors, defaults, etc.).
+      parameters:
+      - $ref: '#/components/parameters/pathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeTimeTrackingSettingsDTO'
+      responses:
+        200:
+          description: Settings updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeTimeTrackingInfoDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+  /api/v1/timetracking/employees/sync-from-absences:
+    post:
+      tags:
+      - EmployeeSettings
+      summary: Sync hierarchy from absences
+      description: Copies supervisor/supervisee relationships from the Absences module.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                overwriteExisting:
+                  type: boolean
+                  default: false
+                  description: Whether to overwrite existing relationships or only fill empty ones.
+      responses:
+        200:
+          description: Hierarchy synced.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  updatedCount:
+                    type: integer
+                    description: Number of employees updated.
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+  # ========================================
+  # Module Settings
+  # ========================================
+  /api/v1/timetracking/settings:
+    get:
+      tags:
+      - Settings
+      summary: Get module settings
+      description: Retrieves organization-level time tracking settings.
+      responses:
+        200:
+          description: Time tracking settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeTrackingSettingsDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+    put:
+      tags:
+      - Settings
+      summary: Update module settings
+      description: Updates organization-level time tracking configuration.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeTrackingSettingsDTO'
+      responses:
+        200:
+          description: Settings updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeTrackingSettingsDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+  # ========================================
+  # Reports & Export
+  # ========================================
+  /api/v1/timetracking/reports/summary:
+    get:
+      tags:
+      - Reports
+      summary: Get summary report
+      description: Generates a summary report of time tracking data.
+      parameters:
+      - name: fromDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: toDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: employeeId
+        in: query
+        schema:
+          type: string
+      - name: projectId
+        in: query
+        schema:
+          type: string
+      - name: departmentId
+        in: query
+        schema:
+          type: string
+      - name: groupBy
+        in: query
+        schema:
+          type: string
+          enum:
+          - employee
+          - project
+          - department
+          - week
+          - month
+      responses:
+        200:
+          description: Summary report.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeTrackingReportSummaryDTO'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+  /api/v1/timetracking/export/timesheets:
+    get:
+      tags:
+      - Export
+      summary: Export timesheets
+      description: Exports timesheets to Excel or CSV.
+      parameters:
+      - name: fromDate
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: toDate
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: status
+        in: query
+        schema:
+          type: array
+          items:
+            type: string
+      - name: employeeId
+        in: query
+        schema:
+          type: string
+      - name: fileFormat
+        in: query
+        schema:
+          type: string
+          enum:
+          - xlsx
+          - csv
+          default: xlsx
+      - $ref: '#/components/parameters/filter'
+      - $ref: '#/components/parameters/sort'
+      responses:
+        200:
+          description: Export file.
+          content:
+            application/octet-stream:
+              schema:
+                type: object
+                properties:
+                  filename:
+                    type: string
+                  fileContent:
+                    type: string
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+  /api/v1/timetracking/export/entries:
+    get:
+      tags:
+      - Export
+      summary: Export time entries
+      description: Exports time entries to Excel or CSV.
+      parameters:
+      - name: fromDate
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: toDate
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: employeeId
+        in: query
+        schema:
+          type: string
+      - name: projectId
+        in: query
+        schema:
+          type: string
+      - name: fileFormat
+        in: query
+        schema:
+          type: string
+          enum:
+          - xlsx
+          - csv
+          default: xlsx
+      - $ref: '#/components/parameters/filter'
+      - $ref: '#/components/parameters/sort'
+      responses:
+        200:
+          description: Export file.
+          content:
+            application/octet-stream:
+              schema:
+                type: object
+                properties:
+                  filename:
+                    type: string
+                  fileContent:
+                    type: string
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+
